@@ -13,7 +13,7 @@ const upcoming = [
     name: 'Car insurance',
     kind: 'Policy',
     when: 'Renews 12 Nov',
-    amount: '€486.00',
+    amount: '€487.00',
   },
   {
     name: 'Passport',
