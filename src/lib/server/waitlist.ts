@@ -1,30 +1,15 @@
 import 'server-only';
-import { appendFile, mkdir, readFile } from 'node:fs/promises';
-import path from 'node:path';
+import { supabaseAdmin } from './supabase';
 
-const dir = path.join(process.cwd(), 'data');
-const signupsFile = path.join(dir, 'waitlist.jsonl');
-const answersFile = path.join(dir, 'waitlist-answers.jsonl');
-
-async function isOnList(email: string): Promise<boolean> {
-  const existing = await readFile(signupsFile, 'utf8').catch(() => '');
-  return existing
-    .split('\n')
-    .filter(Boolean)
-    .some((line) => JSON.parse(line).email === email);
-}
-
-async function append(file: string, record: object) {
-  await mkdir(dir, { recursive: true });
-  await appendFile(file, JSON.stringify(record) + '\n');
-}
+const UNIQUE_VIOLATION = '23505';
 
 export async function addToWaitlist(
   email: string,
 ): Promise<'added' | 'exists'> {
-  if (await isOnList(email)) return 'exists';
-  await append(signupsFile, { email, joinedAt: new Date().toISOString() });
-  return 'added';
+  const { error } = await supabaseAdmin.from('waitlist').insert({ email });
+  if (!error) return 'added';
+  if (error.code === UNIQUE_VIOLATION) return 'exists';
+  throw error;
 }
 
 export async function recordAnswer(
@@ -32,12 +17,15 @@ export async function recordAnswer(
   track: string[],
   other: string,
 ): Promise<boolean> {
-  if (!(await isOnList(email))) return false;
-  await append(answersFile, {
-    email,
-    track,
-    other,
-    answeredAt: new Date().toISOString(),
-  });
-  return true;
+  const { data, error } = await supabaseAdmin
+    .from('waitlist')
+    .update({
+      track,
+      other: other || null,
+      answered_at: new Date().toISOString(),
+    })
+    .eq('email', email)
+    .select('id');
+  if (error) throw error;
+  return data.length > 0;
 }
