@@ -1,5 +1,6 @@
 'use server';
 
+import { isValidEmail, normalizeEmail } from '@/lib/core/email';
 import { isTrackOption } from '@/lib/core/waitlist';
 import { addToWaitlist, recordAnswer } from '@/lib/server/waitlist';
 
@@ -14,14 +15,6 @@ export type AnswerState = {
   message: string;
 };
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-function normalizeEmail(value: FormDataEntryValue | null) {
-  return String(value ?? '')
-    .trim()
-    .toLowerCase();
-}
-
 export async function joinWaitlist(
   _prev: WaitlistState,
   formData: FormData,
@@ -32,7 +25,7 @@ export async function joinWaitlist(
 
   const email = normalizeEmail(formData.get('email'));
 
-  if (email.length > 254 || !EMAIL.test(email)) {
+  if (!isValidEmail(email)) {
     return { status: 'error', message: 'Please enter a valid email address.' };
   }
 
