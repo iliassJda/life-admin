@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "ui\",arial,sans-serif",
+        "createdAt": "2026-11-08T12:42:14.345Z",
+        "reason": "agent: test-documents/receipt.html is a fake third-party receipt fixture for scan testing, deliberately not in the Kalends type system"
+      }
+    ]
+  }
+}
