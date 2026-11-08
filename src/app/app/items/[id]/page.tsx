@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { repeatValue } from '@/lib/core/items';
+import { describeReminderDays } from '@/lib/core/settings';
 import { requireUser } from '@/lib/server/auth';
 import { deleteItem, updateItem } from '../actions';
 import { DeleteButton } from '../delete-button';
@@ -21,12 +22,20 @@ export default async function EditItemPage(
     .maybeSingle();
   if (!item) notFound();
 
+  const { data: rules } = await supabase
+    .from('reminder_rules')
+    .select('item_id, days_before')
+    .or(`item_id.is.null,item_id.eq.${item.id}`);
+  const own = (rules ?? []).filter((r) => r.item_id === item.id);
+  const defaults = (rules ?? []).filter((r) => r.item_id === null);
+
   return (
     <div className="max-w-xl">
       <h1 className="mb-10 font-serif text-4xl font-light">{item.name}</h1>
       <ItemForm
         action={updateItem.bind(null, item.id)}
         submitLabel="Save changes"
+        defaultsLabel={describeReminderDays(defaults.map((r) => r.days_before))}
         initial={{
           kind: item.kind,
           name: item.name,
@@ -35,6 +44,8 @@ export default async function EditItemPage(
           amount: item.amount === null ? '' : String(item.amount),
           currency: item.currency,
           notes: item.notes ?? '',
+          reminderMode: own.length > 0 ? 'custom' : 'default',
+          reminderDays: own.map((r) => r.days_before).join(','),
         }}
       />
       <form

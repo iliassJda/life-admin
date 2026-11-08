@@ -61,7 +61,14 @@ export type ItemInput = {
 };
 
 export type ItemField =
-  'kind' | 'name' | 'keyDate' | 'repeat' | 'amount' | 'currency' | 'notes';
+  | 'kind'
+  | 'name'
+  | 'keyDate'
+  | 'repeat'
+  | 'amount'
+  | 'currency'
+  | 'notes'
+  | 'reminders';
 export type ItemErrors = Partial<Record<ItemField, string>>;
 
 function isKind(value: string): value is ItemKind {

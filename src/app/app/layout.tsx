@@ -23,6 +23,12 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
             <span className="text-ink-faint hidden truncate sm:inline">
               {user.email}
             </span>
+            <Link
+              href="/app/settings"
+              className="text-ink-soft hover:text-ink transition-colors"
+            >
+              Settings
+            </Link>
             <form action="/auth/signout" method="post">
               <button
                 type="submit"

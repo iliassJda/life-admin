@@ -1,11 +1,18 @@
 import Link from 'next/link';
 import { findPreset, PRESETS } from '@/lib/core/presets';
+import { describeReminderDays } from '@/lib/core/settings';
+import { requireUser } from '@/lib/server/auth';
 import { createItem } from '../actions';
 import { ItemForm } from '../item-form';
 
 export default async function NewItemPage(props: PageProps<'/app/items/new'>) {
   const query = await props.searchParams;
   const preset = findPreset(query.preset);
+  const { supabase } = await requireUser();
+  const { data: defaults } = await supabase
+    .from('reminder_rules')
+    .select('days_before')
+    .is('item_id', null);
 
   return (
     <div className="max-w-xl">
@@ -33,6 +40,9 @@ export default async function NewItemPage(props: PageProps<'/app/items/new'>) {
         key={preset?.id ?? 'blank'}
         action={createItem}
         submitLabel="Add item"
+        defaultsLabel={describeReminderDays(
+          (defaults ?? []).map((r) => r.days_before),
+        )}
         initial={{
           kind: preset?.kind ?? 'subscription',
           name: preset?.name ?? '',

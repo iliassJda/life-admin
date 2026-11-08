@@ -11,18 +11,26 @@ import {
   type ItemField,
   type ItemKind,
 } from '@/lib/core/items';
+import { REMINDER_DAY_OPTIONS, reminderDayLabel } from '@/lib/core/settings';
 import type { ItemFormState } from './actions';
 
 type Props = {
   action: (state: ItemFormState, formData: FormData) => Promise<ItemFormState>;
   initial: Record<string, string>;
   submitLabel: string;
+  /** The user's default reminder days, described in words. */
+  defaultsLabel: string;
 };
 
 const inputClass =
   'border-line bg-paper text-ink placeholder:text-ink-faint focus:border-accent aria-[invalid=true]:border-alert w-full rounded-xl border px-4 py-3 text-[15px] outline-none';
 
-export function ItemForm({ action, initial, submitLabel }: Props) {
+export function ItemForm({
+  action,
+  initial,
+  submitLabel,
+  defaultsLabel,
+}: Props) {
   const [state, formAction, pending] = useActionState(action, {
     errors: {},
   });
@@ -30,6 +38,10 @@ export function ItemForm({ action, initial, submitLabel }: Props) {
   const [kind, setKind] = useState<ItemKind>(
     (values.kind as ItemKind) || 'subscription',
   );
+  const [reminderMode, setReminderMode] = useState(
+    values.reminderMode === 'custom' ? 'custom' : 'default',
+  );
+  const chosenDays = (values.reminderDays ?? '').split(',').filter(Boolean);
 
   const repeatOptions = REPEAT_OPTIONS.some((o) => o.value === values.repeat)
     ? REPEAT_OPTIONS
@@ -57,7 +69,7 @@ export function ItemForm({ action, initial, submitLabel }: Props) {
                 type="radio"
                 name="kind"
                 value={k}
-                checked={kind === k}
+                defaultChecked={(values.kind || 'subscription') === k}
                 onChange={() => setKind(k)}
                 className="peer sr-only"
               />
@@ -179,6 +191,61 @@ export function ItemForm({ action, initial, submitLabel }: Props) {
         />
         {error('notes')}
       </div>
+
+      <fieldset>
+        <legend className="text-ink-soft mb-2 text-[13px]">Reminders</legend>
+        <div className="space-y-2">
+          <label className="flex cursor-pointer items-center gap-3 text-[15px]">
+            <input
+              type="radio"
+              name="reminderMode"
+              value="default"
+              defaultChecked={values.reminderMode !== 'custom'}
+              onChange={() => setReminderMode('default')}
+              className="size-4 accent-(--accent)"
+            />
+            <span>
+              My defaults{' '}
+              <span className="text-ink-faint">({defaultsLabel})</span>
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-center gap-3 text-[15px]">
+            <input
+              type="radio"
+              name="reminderMode"
+              value="custom"
+              defaultChecked={values.reminderMode === 'custom'}
+              onChange={() => setReminderMode('custom')}
+              className="size-4 accent-(--accent)"
+            />
+            Choose for this item
+          </label>
+        </div>
+        {reminderMode === 'custom' && (
+          <div
+            className="mt-3 flex flex-wrap gap-2"
+            role="group"
+            aria-label="Reminder days for this item"
+            {...invalid('reminders')}
+          >
+            {REMINDER_DAY_OPTIONS.map((d) => (
+              <label key={d} className="cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="reminderDays"
+                  value={d}
+                  defaultChecked={chosenDays.includes(String(d))}
+                  className="peer sr-only"
+                />
+                <span className="border-line text-ink-soft peer-checked:border-accent peer-checked:bg-accent peer-checked:text-accent-ink peer-focus-visible:outline-accent inline-block rounded-full border px-3.5 py-1.5 text-[13px] transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
+                  {reminderDayLabel(d)}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+        {error('reminders')}
+      </fieldset>
 
       {state.message && (
         <p role="alert" className="text-alert text-[14px]">
