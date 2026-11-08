@@ -133,7 +133,7 @@ components:
 
 # Design System: Kalends
 
-Scope: this system covers the public landing world (`src/app/page.tsx`, `src/app/landing/*`, `src/app/waitlist-form.tsx`, `src/app/station.css`). Every token is scoped under the `.station` class as an `--st-*` custom property. The signed-in app (`src/app/app/*`, `src/app/login/*`) still wears its older look (cream paper, Fraunces and Geist, tokens in `src/app/globals.css`). That look is **out of scope and not yet migrated**. It is not part of this system, and new app screens should not copy it as house style.
+Scope: this system covers the whole product: the landing page (`src/app/page.tsx`, `src/app/landing/*`), the account screens (`src/app/login`, `register`, `forgot-password`, `reset-password`, `src/app/auth/*`) and the signed-in app (`src/app/app/*`). Archivo loads once in the root layout and the `station` class sits on `<body>`, so every `--st-*` token in `src/app/station.css` is available everywhere. `src/app/globals.css` maps the role-named utilities (`paper`, `ink`, `line`, `accent`, `amber`, `alert`) onto the same values.
 
 ## Overview
 
@@ -266,6 +266,16 @@ Each character is its own tile: a two-tone gradient with a black seam, 1.5 times
 - **Direction sign:** an ink bar with a yellow arrow plate (48 to 56px, solid SVG arrow, 6px stroke, mitred joins) and a condensed title in flap white. Bars sit edge to edge, divided by rule hairlines.
 - **Route line:** three stops on a 6px ink line ("calling at"). The last stop is the terminus and is filled yellow.
 
+## App Screens
+
+The signed-in app and account screens are Operate surfaces: the same world, used quietly.
+
+- **Header:** a 1px rule under the wordmark, two text links (Upcoming, Settings) with a 2px yellow underline on the current page, the compact yellow "Add item" button (44px) and a dim "Sign out" text button.
+- **Upcoming list:** rows separated by rule hairlines, grouped under labels (This week, This month, Later; Past due in red). Each row leads with the day count on three **static tiles** (`.st-static-tiles`): the flap look without motion, red for today or tomorrow, amber within 30 days, white beyond. The name is 17px semibold, the date line 14px dim with the relative day in the same tone, and the amount sits right in tabular figures.
+- **Forms:** labels are 14px semibold flap white (`.st-field-label`), helper text 13px dim (`.st-hint`), errors 14px red (`.st-error`). Inputs and selects use `.st-input` (selects carry a drawn chevron). Choice groups use `.st-toggle`; presets use `.st-chip`. The primary action is `.st-btn`; secondary and Google actions use `.st-btn-outline`; account deletion uses `.st-btn-danger` inside a 1px red-bordered box.
+- **Account pages:** no card. A 6px yellow bar, a condensed heading (44 to 52px) and a single 420px column on the concourse black, with a rule above the footer link.
+- **Motion:** none beyond 160ms colour transitions on controls. The flaps stay on the landing page.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -282,4 +292,4 @@ Each character is its own tile: a two-tone gradient with a black seam, 1.5 times
 - **Don't** add shadows to signage, fields or controls; depth belongs to the board hardware.
 - **Don't** introduce a second typeface; vary width and weight within Archivo instead.
 - **Don't** use pure white (#fff) for text on black; use Flap White.
-- **Don't** carry the signed-in app's cream paper, Fraunces/Geist pairing or `globals.css` tokens into this world.
+- **Don't** bring back cream paper, a serif display face or rounded pill controls; they belonged to the retired first look.

@@ -1,31 +1,23 @@
 @import 'tailwindcss';
 
+/*
+ * App-wide utility colours, mapped onto the station world (see station.css
+ * and DESIGN.md). The names describe roles: paper is the ground, ink the
+ * text, accent the action colour.
+ */
 :root {
-  --paper: #f6f3ec;
-  --paper-raised: #fbf9f4;
-  --ink: #1d1c1a;
-  --ink-soft: #57534c;
-  --ink-faint: #8d877d;
-  --line: #e2ddd2;
-  --accent: #2f4a3c;
-  --accent-ink: #f6f3ec;
-  --gold: #a4824a;
-  --alert: #9b3d2e;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #141412;
-    --paper-raised: #1b1b18;
-    --ink: #eeeae1;
-    --ink-soft: #b3ada2;
-    --ink-faint: #7d786f;
-    --line: #2c2b27;
-    --accent: #c9b083;
-    --accent-ink: #141412;
-    --gold: #c9b083;
-    --alert: #d98473;
-  }
+  --paper: #0a0b0c;
+  --paper-raised: #17191c;
+  --ink: #f2efe7;
+  --ink-soft: #a9a59c;
+  --ink-faint: #8f8b83;
+  --line: #2c2f34;
+  --accent: #ffc20e;
+  --accent-ink: #0a0b0c;
+  --amber: #ffb000;
+  --alert: #ff5a43;
+  --field: #121316;
+  --field-line: #3a3d42;
 }
 
 @theme inline {
@@ -37,10 +29,11 @@
   --color-line: var(--line);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
-  --color-gold: var(--gold);
+  --color-amber: var(--amber);
   --color-alert: var(--alert);
-  --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-fraunces);
+  --color-field: var(--field);
+  --color-field-line: var(--field-line);
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -52,31 +45,8 @@ body {
   color: var(--ink);
 }
 
-::selection {
-  background: var(--gold);
-  color: var(--paper);
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.rise {
-  animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  .rise {
-    animation: none;
   }
 }

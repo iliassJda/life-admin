@@ -22,8 +22,7 @@ type Props = {
   defaultsLabel: string;
 };
 
-const inputClass =
-  'border-line bg-paper text-ink placeholder:text-ink-faint focus:border-accent aria-[invalid=true]:border-alert w-full rounded-xl border px-4 py-3 text-[15px] outline-none';
+const inputClass = 'st-input';
 
 export function ItemForm({
   action,
@@ -49,7 +48,7 @@ export function ItemForm({
 
   const error = (field: ItemField) =>
     state.errors[field] ? (
-      <p id={`${field}-error`} className="text-alert mt-1.5 text-[13px]">
+      <p id={`${field}-error`} className="st-error mt-1.5">
         {state.errors[field]}
       </p>
     ) : null;
@@ -61,7 +60,7 @@ export function ItemForm({
   return (
     <form action={formAction} className="space-y-6">
       <fieldset>
-        <legend className="text-ink-soft mb-2 text-[13px]">Kind</legend>
+        <legend className="st-field-label">Kind</legend>
         <div className="flex flex-wrap gap-2">
           {ITEM_KINDS.map((k) => (
             <label key={k} className="cursor-pointer">
@@ -73,9 +72,7 @@ export function ItemForm({
                 onChange={() => setKind(k)}
                 className="peer sr-only"
               />
-              <span className="border-line text-ink-soft peer-checked:border-accent peer-checked:bg-accent peer-checked:text-accent-ink peer-focus-visible:outline-accent inline-block rounded-full border px-4 py-2 text-[14px] transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
-                {KIND_LABELS[k]}
-              </span>
+              <span className="st-toggle">{KIND_LABELS[k]}</span>
             </label>
           ))}
         </div>
@@ -83,7 +80,7 @@ export function ItemForm({
       </fieldset>
 
       <div>
-        <label htmlFor="name" className="text-ink-soft mb-2 block text-[13px]">
+        <label htmlFor="name" className="st-field-label">
           Name
         </label>
         <input
@@ -101,10 +98,7 @@ export function ItemForm({
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <label
-            htmlFor="keyDate"
-            className="text-ink-soft mb-2 block text-[13px]"
-          >
+          <label htmlFor="keyDate" className="st-field-label">
             {DATE_LABELS[kind]}
           </label>
           <input
@@ -119,10 +113,7 @@ export function ItemForm({
           {error('keyDate')}
         </div>
         <div>
-          <label
-            htmlFor="repeat"
-            className="text-ink-soft mb-2 block text-[13px]"
-          >
+          <label htmlFor="repeat" className="st-field-label">
             Repeats
           </label>
           <select
@@ -143,11 +134,8 @@ export function ItemForm({
       </div>
 
       <div>
-        <label
-          htmlFor="amount"
-          className="text-ink-soft mb-2 block text-[13px]"
-        >
-          Amount <span className="text-ink-faint">(optional)</span>
+        <label htmlFor="amount" className="st-field-label">
+          Amount <span className="font-normal text-(--st-dim)">(optional)</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -176,8 +164,8 @@ export function ItemForm({
       </div>
 
       <div>
-        <label htmlFor="notes" className="text-ink-soft mb-2 block text-[13px]">
-          Notes <span className="text-ink-faint">(optional)</span>
+        <label htmlFor="notes" className="st-field-label">
+          Notes <span className="font-normal text-(--st-dim)">(optional)</span>
         </label>
         <textarea
           id="notes"
@@ -193,7 +181,7 @@ export function ItemForm({
       </div>
 
       <fieldset>
-        <legend className="text-ink-soft mb-2 text-[13px]">Reminders</legend>
+        <legend className="st-field-label">Reminders</legend>
         <div className="space-y-2">
           <label className="flex cursor-pointer items-center gap-3 text-[15px]">
             <input
@@ -202,11 +190,11 @@ export function ItemForm({
               value="default"
               defaultChecked={values.reminderMode !== 'custom'}
               onChange={() => setReminderMode('default')}
-              className="size-4 accent-(--accent)"
+              className="size-4 accent-(--st-yellow)"
             />
             <span>
               My defaults{' '}
-              <span className="text-ink-faint">({defaultsLabel})</span>
+              <span className="text-(--st-dim)">({defaultsLabel})</span>
             </span>
           </label>
           <label className="flex cursor-pointer items-center gap-3 text-[15px]">
@@ -216,7 +204,7 @@ export function ItemForm({
               value="custom"
               defaultChecked={values.reminderMode === 'custom'}
               onChange={() => setReminderMode('custom')}
-              className="size-4 accent-(--accent)"
+              className="size-4 accent-(--st-yellow)"
             />
             Choose for this item
           </label>
@@ -237,9 +225,7 @@ export function ItemForm({
                   defaultChecked={chosenDays.includes(String(d))}
                   className="peer sr-only"
                 />
-                <span className="border-line text-ink-soft peer-checked:border-accent peer-checked:bg-accent peer-checked:text-accent-ink peer-focus-visible:outline-accent inline-block rounded-full border px-3.5 py-1.5 text-[13px] transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
-                  {reminderDayLabel(d)}
-                </span>
+                <span className="st-toggle">{reminderDayLabel(d)}</span>
               </label>
             ))}
           </div>
@@ -248,22 +234,18 @@ export function ItemForm({
       </fieldset>
 
       {state.message && (
-        <p role="alert" className="text-alert text-[14px]">
+        <p role="alert" className="st-error">
           {state.message}
         </p>
       )}
 
       <div className="flex items-center gap-3">
-        <button
-          type="submit"
-          disabled={pending}
-          className="bg-accent text-accent-ink focus-visible:outline-accent rounded-full px-6 py-3 text-[15px] font-medium transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60"
-        >
+        <button type="submit" disabled={pending} className="st-btn">
           {pending ? 'Saving…' : submitLabel}
         </button>
         <Link
           href="/app"
-          className="text-ink-soft hover:text-ink px-3 py-3 text-[15px]"
+          className="st-focus px-3 py-3 text-[15px] font-semibold text-(--st-dim) hover:text-(--st-white)"
         >
           Cancel
         </Link>

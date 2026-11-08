@@ -13,7 +13,7 @@ export function DeleteButton({ name }: { name: string }) {
           e.preventDefault();
         }
       }}
-      className="text-alert text-[14px] hover:underline disabled:opacity-60"
+      className="st-focus text-[15px] font-semibold text-(--st-red) underline-offset-4 hover:underline disabled:opacity-60"
     >
       {pending ? 'Deleting…' : 'Delete this item'}
     </button>

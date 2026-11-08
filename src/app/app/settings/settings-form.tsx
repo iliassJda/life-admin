@@ -8,8 +8,7 @@ import {
 } from '@/lib/core/settings';
 import { saveSettings, type SettingsState } from './actions';
 
-const inputClass =
-  'border-line bg-paper text-ink focus:border-accent aria-[invalid=true]:border-alert w-full rounded-xl border px-4 py-3 text-[15px] outline-none';
+const inputClass = 'st-input';
 
 type Props = {
   timeZones: string[];
@@ -35,7 +34,7 @@ export function SettingsForm({ timeZones, initial }: Props) {
 
   const error = (field: SettingsField) =>
     state.errors[field] ? (
-      <p id={`${field}-error`} className="text-alert mt-1.5 text-[13px]">
+      <p id={`${field}-error`} className="st-error mt-1.5">
         {state.errors[field]}
       </p>
     ) : null;
@@ -51,11 +50,13 @@ export function SettingsForm({ timeZones, initial }: Props) {
           type="checkbox"
           name="emailReminders"
           defaultChecked={initial.emailReminders}
-          className="mt-1 size-4 accent-(--accent)"
+          className="mt-1 size-4 accent-(--st-yellow)"
         />
         <span>
-          <span className="block text-[15px] font-medium">Email reminders</span>
-          <span className="text-ink-soft block text-[14px]">
+          <span className="block text-[16px] font-semibold">
+            Email reminders
+          </span>
+          <span className="block text-[14px] text-(--st-dim)">
             Turn this off to stop all reminder emails. Your items stay as they
             are.
           </span>
@@ -63,10 +64,8 @@ export function SettingsForm({ timeZones, initial }: Props) {
       </label>
 
       <fieldset>
-        <legend className="text-ink-soft mb-1 text-[13px]">
-          Remind me, by default
-        </legend>
-        <p className="text-ink-faint mb-3 text-[13px]">
+        <legend className="st-field-label mb-1!">Remind me, by default</legend>
+        <p className="mb-3 text-[14px] text-(--st-dim)">
           Any item can have its own reminder days instead.
         </p>
         <div className="flex flex-wrap gap-2" {...invalid('defaultDays')}>
@@ -79,9 +78,7 @@ export function SettingsForm({ timeZones, initial }: Props) {
                 defaultChecked={initial.defaultDays.includes(d)}
                 className="peer sr-only"
               />
-              <span className="border-line text-ink-soft peer-checked:border-accent peer-checked:bg-accent peer-checked:text-accent-ink peer-focus-visible:outline-accent inline-block rounded-full border px-3.5 py-1.5 text-[13px] transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
-                {reminderDayLabel(d)}
-              </span>
+              <span className="st-toggle">{reminderDayLabel(d)}</span>
             </label>
           ))}
         </div>
@@ -90,10 +87,7 @@ export function SettingsForm({ timeZones, initial }: Props) {
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <label
-            htmlFor="reminderTime"
-            className="text-ink-soft mb-2 block text-[13px]"
-          >
+          <label htmlFor="reminderTime" className="st-field-label">
             Send reminders at
           </label>
           <select
@@ -110,10 +104,7 @@ export function SettingsForm({ timeZones, initial }: Props) {
           {error('reminderTime')}
         </div>
         <div>
-          <label
-            htmlFor="timeZone"
-            className="text-ink-soft mb-2 block text-[13px]"
-          >
+          <label htmlFor="timeZone" className="st-field-label">
             Time zone
           </label>
           <select
@@ -134,18 +125,14 @@ export function SettingsForm({ timeZones, initial }: Props) {
       </div>
 
       <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={pending}
-          className="bg-accent text-accent-ink focus-visible:outline-accent rounded-full px-6 py-3 text-[15px] font-medium transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60"
-        >
+        <button type="submit" disabled={pending} className="st-btn">
           {pending ? 'Saving…' : 'Save settings'}
         </button>
         <p aria-live="polite" className="text-[14px]">
           {state.saved && !pending ? (
-            <span className="text-accent">Saved.</span>
+            <span className="font-semibold text-(--st-amber)">Saved.</span>
           ) : state.message ? (
-            <span className="text-alert">{state.message}</span>
+            <span className="text-(--st-red)">{state.message}</span>
           ) : null}
         </p>
       </div>

@@ -4,11 +4,9 @@ import { useId, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { signInWithGoogle } from './actions';
 
-export const inputClass =
-  'border-line bg-paper text-ink placeholder:text-ink-faint focus:border-accent aria-[invalid=true]:border-alert w-full rounded-xl border px-4 py-3 text-[15px] outline-none';
+export const inputClass = 'st-input';
 
-export const primaryButtonClass =
-  'bg-accent text-accent-ink focus-visible:outline-accent w-full rounded-xl px-4 py-3 text-[15px] font-medium transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60';
+export const primaryButtonClass = 'st-btn w-full';
 
 export function PasswordInput({
   name,
@@ -30,7 +28,7 @@ export function PasswordInput({
   const hintId = `${id}-hint`;
   return (
     <div>
-      <label htmlFor={id} className="text-ink-soft mb-2 block text-[13px]">
+      <label htmlFor={id} className="st-field-label">
         {label}
       </label>
       <div className="relative">
@@ -52,13 +50,13 @@ export function PasswordInput({
           onClick={() => setVisible((v) => !v)}
           aria-pressed={visible}
           aria-label={visible ? 'Hide password' : 'Show password'}
-          className="text-ink-soft hover:text-ink focus-visible:outline-accent absolute inset-y-1 right-1 rounded-lg px-3 text-[13px] focus-visible:outline-2"
+          className="st-focus absolute inset-y-1.5 right-1.5 rounded-[2px] px-3 text-[13px] font-semibold text-(--st-dim) hover:text-(--st-white)"
         >
           {visible ? 'Hide' : 'Show'}
         </button>
       </div>
       {hint && (
-        <p id={hintId} className="text-ink-faint mt-1.5 text-[13px]">
+        <p id={hintId} className="st-hint">
           {hint}
         </p>
       )}
@@ -84,11 +82,7 @@ export function SubmitButton({
 function GoogleButton() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="border-line text-ink hover:border-ink-faint focus-visible:outline-accent flex w-full items-center justify-center gap-3 rounded-xl border px-4 py-3 text-[15px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60"
-    >
+    <button type="submit" disabled={pending} className="st-btn-outline w-full">
       <svg aria-hidden="true" viewBox="0 0 18 18" className="size-[18px]">
         <path
           fill="#4285F4"
@@ -115,10 +109,10 @@ function GoogleButton() {
 export function GoogleSignIn({ next }: { next: string }) {
   return (
     <>
-      <div className="text-ink-faint my-5 flex items-center gap-3 text-[13px]">
-        <span className="bg-line h-px flex-1" />
+      <div className="st-label my-6 flex items-center gap-3">
+        <span className="h-px flex-1 bg-(--st-rule)" />
         or
-        <span className="bg-line h-px flex-1" />
+        <span className="h-px flex-1 bg-(--st-rule)" />
       </div>
       <form action={signInWithGoogle}>
         <input type="hidden" name="next" value={next} />

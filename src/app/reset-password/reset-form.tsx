@@ -11,7 +11,7 @@ export function ResetForm() {
   const [state, formAction] = useActionState(updatePassword, idle);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       <PasswordInput
         name="password"
         label="New password"
@@ -27,11 +27,7 @@ export function ResetForm() {
         invalid={state.field === 'confirm'}
         describedBy="reset-msg"
       />
-      <p
-        id="reset-msg"
-        aria-live="polite"
-        className="text-alert text-[13px] empty:hidden"
-      >
+      <p id="reset-msg" aria-live="polite" className="st-error empty:hidden">
         {state.status === 'error' ? state.message : ''}
       </p>
       <SubmitButton label="Save new password" pendingLabel="Saving…" />

@@ -32,10 +32,7 @@ export default async function LoginPage(props: PageProps<'/login'>) {
       footer={
         <>
           New to {site.name}?{' '}
-          <Link
-            href={registerHref}
-            className="text-ink font-medium underline underline-offset-4"
-          >
+          <Link href={registerHref} className="st-link">
             Create an account
           </Link>
         </>

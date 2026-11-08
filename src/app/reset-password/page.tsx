@@ -19,7 +19,8 @@ export default async function ResetPasswordPage() {
       intro={
         email ? (
           <>
-            For <span className="text-ink font-medium">{email}</span>.
+            For <span className="font-semibold text-(--st-white)">{email}</span>
+            .
           </>
         ) : null
       }

@@ -22,10 +22,10 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="mb-10 font-serif text-4xl font-light">Settings</h1>
+      <h1 className="st-heading mb-10 text-[44px] sm:text-[56px]">Settings</h1>
 
       <section aria-labelledby="reminders-heading">
-        <h2 id="reminders-heading" className="mb-6 font-serif text-2xl">
+        <h2 id="reminders-heading" className="st-heading mb-6 text-[30px]">
           Reminders
         </h2>
         <SettingsForm
@@ -41,13 +41,14 @@ export default async function SettingsPage() {
 
       <section
         aria-labelledby="account-heading"
-        className="border-line mt-16 border-t pt-8"
+        className="mt-16 border-t border-(--st-rule) pt-8"
       >
-        <h2 id="account-heading" className="mb-2 font-serif text-2xl">
+        <h2 id="account-heading" className="st-heading mb-3 text-[30px]">
           Account
         </h2>
-        <p className="text-ink-soft mb-6 text-[15px]">
-          Signed in as <span className="text-ink">{email}</span>.
+        <p className="mb-6 text-[16px] text-(--st-dim)">
+          Signed in as{' '}
+          <span className="font-semibold text-(--st-white)">{email}</span>.
         </p>
         {email && <DeleteAccount email={email} />}
       </section>

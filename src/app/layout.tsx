@@ -1,18 +1,14 @@
-import type { Metadata } from 'next';
-import { Fraunces, Geist } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Archivo } from 'next/font/google';
 import { site } from '@/lib/core/site';
 import './globals.css';
+import './station.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// One family for the whole product; its width axis does the work of a second face.
+const archivo = Archivo({
+  variable: '--font-archivo',
   subsets: ['latin'],
-});
-
-const fraunces = Fraunces({
-  variable: '--font-fraunces',
-  subsets: ['latin'],
-  axes: ['opsz', 'SOFT'],
-  style: ['normal', 'italic'],
+  axes: ['wdth'],
 });
 
 export const metadata: Metadata = {
@@ -20,13 +16,15 @@ export const metadata: Metadata = {
   description: site.description,
 };
 
+export const viewport: Viewport = {
+  themeColor: '#0a0b0c',
+  colorScheme: 'dark',
+};
+
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${fraunces.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col font-sans">{children}</body>
+    <html lang="en" className={`${archivo.variable} h-full antialiased`}>
+      <body className="station flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

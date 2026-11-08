@@ -25,10 +25,7 @@ export default async function ForgotPasswordPage(
           : null
       }
       footer={
-        <Link
-          href="/login"
-          className="text-ink font-medium underline underline-offset-4"
-        >
+        <Link href="/login" className="st-link">
           Back to sign in
         </Link>
       }

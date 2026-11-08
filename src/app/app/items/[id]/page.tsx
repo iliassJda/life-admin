@@ -31,7 +31,9 @@ export default async function EditItemPage(
 
   return (
     <div className="max-w-xl">
-      <h1 className="mb-10 font-serif text-4xl font-light">{item.name}</h1>
+      <h1 className="st-heading mb-10 text-[44px] sm:text-[56px]">
+        {item.name}
+      </h1>
       <ItemForm
         action={updateItem.bind(null, item.id)}
         submitLabel="Save changes"
@@ -50,7 +52,7 @@ export default async function EditItemPage(
       />
       <form
         action={deleteItem.bind(null, item.id)}
-        className="border-line mt-12 border-t pt-6"
+        className="mt-14 border-t border-(--st-rule) pt-6"
       >
         <DeleteButton name={item.name} />
       </form>

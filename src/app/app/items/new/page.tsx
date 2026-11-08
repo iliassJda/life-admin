@@ -16,19 +16,17 @@ export default async function NewItemPage(props: PageProps<'/app/items/new'>) {
 
   return (
     <div className="max-w-xl">
-      <h1 className="font-serif text-4xl font-light">Add an item</h1>
+      <h1 className="st-heading text-[44px] sm:text-[56px]">Add an item</h1>
 
       <div className="mt-6 mb-10">
-        <p className="text-ink-faint mb-3 text-[12px] tracking-[0.15em] uppercase">
-          Quick start
-        </p>
+        <p className="st-label mb-3">Quick start</p>
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((p) => (
             <Link
               key={p.id}
               href={`/app/items/new?preset=${p.id}`}
               aria-current={p.id === preset?.id ? 'true' : undefined}
-              className="border-line text-ink-soft hover:border-ink-faint hover:text-ink aria-[current=true]:border-accent aria-[current=true]:text-accent rounded-full border px-3.5 py-1.5 text-[13px] transition-colors"
+              className="st-chip aria-[current=true]:border-(--st-yellow) aria-[current=true]:text-(--st-yellow)"
             >
               {p.name}
             </Link>

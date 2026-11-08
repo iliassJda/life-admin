@@ -13,6 +13,24 @@ import { requireUser } from '@/lib/server/auth';
 
 const GROUP_ORDER: UpcomingGroup[] = ['past', 'week', 'month', 'later'];
 
+// Red is for due or overdue, amber for soon, white for later (DESIGN.md).
+function tone(daysUntil: number): string {
+  if (daysUntil <= 1) return 'st-tone-red';
+  if (daysUntil <= 30) return 'st-tone-amber';
+  return '';
+}
+
+function DayTiles({ days }: { days: number }) {
+  const shown = String(Math.min(Math.abs(days), 999)).padStart(3, ' ');
+  return (
+    <span className={`st-static-tiles ${tone(days)}`} aria-hidden="true">
+      {Array.from(shown).map((ch, i) => (
+        <span key={i}>{ch === ' ' ? ' ' : ch}</span>
+      ))}
+    </span>
+  );
+}
+
 export default async function AppHome() {
   const { supabase, id } = await requireUser();
   const [{ data: items }, { data: profile }] = await Promise.all([
@@ -24,100 +42,132 @@ export default async function AppHome() {
   const groups = buildUpcoming(items ?? [], today);
   const isEmpty = !items || items.length === 0;
 
-  return (
-    <div>
-      <div className="flex items-end justify-between gap-4">
-        <h1 className="font-serif text-4xl font-light">Upcoming</h1>
-        {!isEmpty && (
-          <Link
-            href="/app/items/new"
-            className="bg-accent text-accent-ink rounded-full px-5 py-2.5 text-[14px] font-medium transition-opacity hover:opacity-90"
-          >
-            Add item
-          </Link>
-        )}
-      </div>
+  // What is due within 30 days, per currency.
+  const dueSoon = new Map<string, number>();
+  for (const group of ['week', 'month'] as const) {
+    for (const { item, daysUntil } of groups[group]) {
+      if (item.amount !== null && daysUntil <= 30) {
+        dueSoon.set(
+          item.currency,
+          (dueSoon.get(item.currency) ?? 0) + Number(item.amount),
+        );
+      }
+    }
+  }
 
-      {isEmpty ? (
-        <div className="border-line bg-paper-raised mt-10 rounded-3xl border p-8 sm:p-10">
-          <p className="font-serif text-2xl">Nothing to watch yet.</p>
-          <p className="text-ink-soft mt-2 max-w-md text-[15px] leading-relaxed">
-            Add the first thing with a date attached. We’ll email you 30, 7 and
-            1 day before it renews or expires.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {PRESETS.slice(0, 6).map((p) => (
-              <Link
-                key={p.id}
-                href={`/app/items/new?preset=${p.id}`}
-                className="border-line text-ink-soft hover:border-ink-faint hover:text-ink rounded-full border px-3.5 py-1.5 text-[13px] transition-colors"
-              >
-                {p.name}
-              </Link>
-            ))}
+  if (isEmpty) {
+    return (
+      <div className="max-w-2xl">
+        <h1 className="st-heading text-[44px] sm:text-[56px]">
+          Nothing on your board yet.
+        </h1>
+        <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-(--st-dim)">
+          Add the first thing with a date attached: a subscription, a document
+          or a contract. We’ll email you 30, 7 and 1 day before it renews or
+          expires.
+        </p>
+        <h2 className="st-label mt-10 mb-3">Start with a common one</h2>
+        <div className="flex flex-wrap gap-2">
+          {PRESETS.slice(0, 8).map((p) => (
             <Link
-              href="/app/items/new"
-              className="bg-accent text-accent-ink rounded-full px-3.5 py-1.5 text-[13px] font-medium"
+              key={p.id}
+              href={`/app/items/new?preset=${p.id}`}
+              className="st-chip"
             >
-              Something else
+              <svg aria-hidden="true" viewBox="0 0 12 12" className="size-3">
+                <path
+                  d="M6 1v10M1 6h10"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  fill="none"
+                />
+              </svg>
+              {p.name}
             </Link>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-10 space-y-10">
-          {GROUP_ORDER.filter((g) => groups[g].length > 0).map((group) => (
-            <section key={group}>
-              <h2
-                className={`mb-2 text-[12px] font-medium tracking-[0.18em] uppercase ${
-                  group === 'past' ? 'text-alert' : 'text-gold'
-                }`}
-              >
-                {GROUP_LABELS[group]}
-              </h2>
-              <ul className="divide-line border-line divide-y border-y">
-                {groups[group].map(({ item, date, daysUntil }) => (
-                  <li key={item.id}>
-                    <Link
-                      href={`/app/items/${item.id}`}
-                      className="hover:bg-paper-raised -mx-3 flex items-center gap-4 rounded-xl px-3 py-4 transition-colors"
-                    >
-                      <span
-                        className={`size-2 shrink-0 rounded-full ${
-                          daysUntil < 0
-                            ? 'bg-alert'
-                            : daysUntil <= 7
-                              ? 'bg-gold'
-                              : 'bg-line'
-                        }`}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[15px] font-medium">
-                          {item.name}
-                        </p>
-                        <p className="text-ink-faint text-[13px]">
-                          {KIND_LABELS[item.kind]} · {formatLocalDate(date)}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p
-                          className={`text-[13px] ${daysUntil < 0 ? 'text-alert' : 'text-ink-soft'}`}
-                        >
-                          {describeDaysUntil(daysUntil)}
-                        </p>
-                        {item.amount !== null && (
-                          <p className="text-ink-soft font-serif text-[15px] tabular-nums">
-                            {formatAmount(item.amount, item.currency)}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
           ))}
         </div>
-      )}
+        <Link href="/app/items/new" className="st-btn mt-8">
+          Add something else
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+        <h1 className="st-heading text-[44px] sm:text-[56px]">Upcoming</h1>
+        <p className="text-[15px] text-(--st-dim)">
+          {items.length} {items.length === 1 ? 'item' : 'items'}
+          {dueSoon.size > 0 && (
+            <>
+              {' · '}
+              <span className="st-num font-semibold text-(--st-amber)">
+                {[...dueSoon]
+                  .map(([currency, total]) => formatAmount(total, currency))
+                  .join(' + ')}
+              </span>{' '}
+              due in the next 30 days
+            </>
+          )}
+        </p>
+      </div>
+
+      <div className="mt-10 space-y-12">
+        {GROUP_ORDER.filter((g) => groups[g].length > 0).map((group) => (
+          <section key={group} aria-labelledby={`group-${group}`}>
+            <h2
+              id={`group-${group}`}
+              className={`st-label mb-1 border-b border-(--st-rule) pb-3 ${
+                group === 'past' ? 'text-(--st-red)!' : ''
+              }`}
+            >
+              {GROUP_LABELS[group]}
+            </h2>
+            <ul>
+              {groups[group].map(({ item, date, daysUntil }) => (
+                <li key={item.id} className="border-b border-(--st-rule)">
+                  <Link
+                    href={`/app/items/${item.id}`}
+                    className="st-focus -mx-3 grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-[3px] px-3 py-4 transition-colors hover:bg-(--st-housing) sm:gap-6"
+                  >
+                    <DayTiles days={daysUntil} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-[17px] font-semibold">
+                        {item.name}
+                      </span>
+                      <span className="mt-0.5 block text-[14px] text-(--st-dim)">
+                        <span
+                          className={
+                            daysUntil <= 1
+                              ? 'font-semibold text-(--st-red)'
+                              : daysUntil <= 30
+                                ? 'font-semibold text-(--st-amber)'
+                                : ''
+                          }
+                        >
+                          {describeDaysUntil(daysUntil)}
+                        </span>
+                        {' · '}
+                        {formatLocalDate(date)}
+                        <span className="hidden sm:inline">
+                          {' · '}
+                          {KIND_LABELS[item.kind]}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="st-num text-right text-[16px] font-semibold">
+                      {item.amount !== null
+                        ? formatAmount(Number(item.amount), item.currency)
+                        : ''}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

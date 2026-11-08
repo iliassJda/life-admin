@@ -10,28 +10,25 @@ const idle: AuthState = { status: 'idle', message: '' };
 function CheckEmail({ email, next }: { email: string; next: string }) {
   const [state, action] = useActionState(resendConfirmation, idle);
   return (
-    <div role="status" className="space-y-4">
-      <p className="font-serif text-2xl">Check your inbox.</p>
-      <p className="text-ink-soft text-[15px] leading-relaxed">
+    <div role="status" className="space-y-5">
+      <p className="st-heading text-[30px]">Check your inbox.</p>
+      <p className="text-[16px] leading-relaxed text-(--st-dim)">
         We sent a confirmation link to{' '}
-        <span className="text-ink font-medium">{email}</span>. Open it in this
-        browser to finish creating your account.
+        <span className="font-semibold text-(--st-white)">{email}</span>. Open
+        it in this browser to finish creating your account.
       </p>
       {state.status === 'resent' ? (
-        <p className="text-ink-soft text-[14px]">Sent again.</p>
+        <p className="text-[14px] text-(--st-dim)">Sent again.</p>
       ) : (
         <form action={action}>
           <input type="hidden" name="email" value={email} />
           <input type="hidden" name="next" value={next} />
           {state.status === 'error' && (
-            <p role="alert" className="text-alert mb-2 text-[13px]">
+            <p role="alert" className="st-error mb-2">
               {state.message}
             </p>
           )}
-          <button
-            type="submit"
-            className="text-ink-soft hover:text-ink text-[14px] underline underline-offset-4"
-          >
+          <button type="submit" className="st-link text-[14px]">
             Didn’t get it? Send it again
           </button>
         </form>
@@ -48,10 +45,10 @@ export function RegisterForm({ next }: { next: string }) {
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       <input type="hidden" name="next" value={next} />
       <div>
-        <label htmlFor="email" className="text-ink-soft mb-2 block text-[13px]">
+        <label htmlFor="email" className="st-field-label">
           Email address
         </label>
         <input
@@ -75,11 +72,7 @@ export function RegisterForm({ next }: { next: string }) {
         invalid={state.field === 'password'}
         describedBy="register-msg"
       />
-      <p
-        id="register-msg"
-        aria-live="polite"
-        className="text-alert text-[13px] empty:hidden"
-      >
+      <p id="register-msg" aria-live="polite" className="st-error empty:hidden">
         {state.status === 'error' ? state.message : ''}
       </p>
       <SubmitButton label="Create account" pendingLabel="Creating account…" />

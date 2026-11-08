@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { site } from '@/lib/core/site';
 import { requireUser } from '@/lib/server/auth';
+import { Wordmark } from '../wordmark';
+import { NavLinks } from './nav-links';
 
 export const metadata: Metadata = {
   title: site.name,
@@ -9,30 +11,41 @@ export const metadata: Metadata = {
 };
 
 export default async function AppLayout({ children }: LayoutProps<'/app'>) {
-  const user = await requireUser();
+  await requireUser();
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border-line border-b">
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-4 px-6 py-4">
-          <Link href="/app" className="font-serif text-2xl tracking-tight">
-            {site.name}
-            <span className="text-gold">.</span>
+      <header className="border-b border-(--st-rule)">
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-4 sm:px-8">
+          <Link
+            href="/app"
+            className="text-[28px] leading-none"
+            aria-label={`${site.name}, upcoming`}
+          >
+            <Wordmark />
           </Link>
-          <div className="flex items-center gap-4 text-[13px]">
-            <span className="text-ink-faint hidden truncate sm:inline">
-              {user.email}
-            </span>
+          <div className="order-last -mx-3 w-full sm:order-none sm:mx-0 sm:w-auto">
+            <NavLinks />
+          </div>
+          <div className="ml-auto flex items-center gap-4">
             <Link
-              href="/app/settings"
-              className="text-ink-soft hover:text-ink transition-colors"
+              href="/app/items/new"
+              className="st-btn min-h-11 px-4 text-[14px]"
             >
-              Settings
+              <svg aria-hidden="true" viewBox="0 0 12 12" className="size-3">
+                <path
+                  d="M6 1v10M1 6h10"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                />
+              </svg>
+              Add item
             </Link>
             <form action="/auth/signout" method="post">
               <button
                 type="submit"
-                className="border-line text-ink-soft hover:border-ink-faint hover:text-ink rounded-full border px-3.5 py-1.5 transition-colors"
+                className="st-focus text-[14px] font-semibold text-(--st-dim) hover:text-(--st-white)"
               >
                 Sign out
               </button>
@@ -40,7 +53,7 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-8 sm:py-14">
         {children}
       </main>
     </div>

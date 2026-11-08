@@ -24,10 +24,7 @@ export default async function RegisterPage(props: PageProps<'/register'>) {
       footer={
         <>
           Already have an account?{' '}
-          <Link
-            href={loginHref}
-            className="text-ink font-medium underline underline-offset-4"
-          >
+          <Link href={loginHref} className="st-link">
             Sign in
           </Link>
         </>
