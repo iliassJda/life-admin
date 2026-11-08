@@ -4,37 +4,19 @@ import type { EmailContent } from '@/lib/core/reminder-email';
 
 export type OutgoingEmail = EmailContent & { to: string };
 
+async function check(res: Response, service: string) {
+  if (!res.ok) {
+    throw new Error(
+      `${service} ${res.status}: ${(await res.text()).slice(0, 300)}`,
+    );
+  }
+}
+
 /**
- * Sends through Resend when RESEND_API_KEY is set. In local development,
- * MAILPIT_URL catches every email in the local inbox instead.
+ * In local development MAILPIT_URL is set, and every email lands in the local
+ * test inbox, even when a Resend key is present. Everywhere else, Resend sends.
  */
 export async function sendEmail(email: OutgoingEmail): Promise<void> {
-  const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? `${site.name} <onboarding@resend.dev>`;
-
-  if (resendKey) {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: [email.to],
-        subject: email.subject,
-        html: email.html,
-        text: email.text,
-      }),
-    });
-    if (!res.ok) {
-      throw new Error(
-        `Resend ${res.status}: ${(await res.text()).slice(0, 300)}`,
-      );
-    }
-    return;
-  }
-
   const mailpit = process.env.MAILPIT_URL;
   if (mailpit) {
     const res = await fetch(`${mailpit.replace(/\/+$/, '')}/api/v1/send`, {
@@ -48,11 +30,27 @@ export async function sendEmail(email: OutgoingEmail): Promise<void> {
         Text: email.text,
       }),
     });
-    if (!res.ok) {
-      throw new Error(
-        `Mailpit ${res.status}: ${(await res.text()).slice(0, 300)}`,
-      );
-    }
+    await check(res, 'Mailpit');
+    return;
+  }
+
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: process.env.EMAIL_FROM ?? `${site.name} <onboarding@resend.dev>`,
+        to: [email.to],
+        subject: email.subject,
+        html: email.html,
+        text: email.text,
+      }),
+    });
+    await check(res, 'Resend');
     return;
   }
 
