@@ -40,12 +40,15 @@ export async function proxy(request: NextRequest) {
   if (!signedIn && pathname.startsWith('/app')) {
     return redirectTo(`/login?next=${encodeURIComponent(pathname + search)}`);
   }
-  if (signedIn && pathname === '/login') {
+  if (!signedIn && pathname === '/reset-password') {
+    return redirectTo('/forgot-password?error=expired');
+  }
+  if (signedIn && (pathname === '/login' || pathname === '/register')) {
     return redirectTo('/app');
   }
   return response;
 }
 
 export const config = {
-  matcher: ['/app/:path*', '/login'],
+  matcher: ['/app/:path*', '/login', '/register', '/reset-password'],
 };

@@ -3,7 +3,14 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { safeNextPath } from '@/lib/core/redirect';
 import { createUserClient } from '@/lib/server/supabase-user';
 
-const OTP_TYPES: EmailOtpType[] = ['magiclink', 'email', 'signup', 'invite'];
+const OTP_TYPES: EmailOtpType[] = [
+  'signup',
+  'email',
+  'recovery',
+  'email_change',
+  'invite',
+  'magiclink',
+];
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
@@ -26,7 +33,9 @@ export async function GET(request: NextRequest) {
     ok = !error;
   }
 
-  return NextResponse.redirect(
-    new URL(ok ? next : '/login?error=link', request.url),
-  );
+  const failed =
+    next === '/reset-password'
+      ? '/forgot-password?error=expired'
+      : '/login?error=link';
+  return NextResponse.redirect(new URL(ok ? next : failed, request.url));
 }

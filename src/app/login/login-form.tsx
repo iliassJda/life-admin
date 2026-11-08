@@ -1,78 +1,103 @@
 'use client';
 
+import Link from 'next/link';
 import { useActionState } from 'react';
-import { sendMagicLink, signInWithGoogle, type LoginState } from './actions';
+import { resendConfirmation, signIn, type AuthState } from '../auth/actions';
+import { inputClass, PasswordInput, SubmitButton } from '../auth/ui';
 
-const initialState: LoginState = { status: 'idle', message: '' };
+const idle: AuthState = { status: 'idle', message: '' };
 
-export function LoginForm({ next }: { next: string }) {
-  const [state, formAction, pending] = useActionState(
-    sendMagicLink,
-    initialState,
-  );
-
-  if (state.status === 'sent') {
+function ResendConfirmation({ email, next }: { email: string; next: string }) {
+  const [state, action] = useActionState(resendConfirmation, idle);
+  if (state.status === 'resent') {
     return (
-      <div role="status" className="text-center">
-        <p className="font-serif text-2xl">Check your inbox.</p>
-        <p className="text-ink-soft mt-3 text-[15px] leading-relaxed">
-          We sent a sign-in link to{' '}
-          <span className="text-ink font-medium">{state.email}</span>. Open it
-          in this browser to continue.
-        </p>
-      </div>
+      <p role="status" className="text-ink-soft text-[14px]">
+        Sent. Check your inbox for a new confirmation link.
+      </p>
     );
   }
+  return (
+    <form action={action}>
+      <input type="hidden" name="email" value={email} />
+      <input type="hidden" name="next" value={next} />
+      {state.status === 'error' && (
+        <p role="alert" className="text-alert mb-2 text-[13px]">
+          {state.message}
+        </p>
+      )}
+      <SubmitButton
+        label="Send the confirmation link again"
+        pendingLabel="Sending…"
+      />
+    </form>
+  );
+}
+
+export function LoginForm({ next }: { next: string }) {
+  const [state, formAction] = useActionState(signIn, idle);
 
   return (
-    <div>
-      <form action={formAction} className="space-y-3">
+    <div className="space-y-4">
+      <form action={formAction} className="space-y-4">
         <input type="hidden" name="next" value={next} />
-        <label htmlFor="email" className="text-ink-soft block text-[13px]">
-          Email address
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          placeholder="you@example.com"
-          aria-invalid={state.status === 'error'}
-          aria-describedby="login-msg"
-          className="border-line bg-paper text-ink placeholder:text-ink-faint focus:border-accent w-full rounded-xl border px-4 py-3 text-[15px] outline-none"
+        <div>
+          <label
+            htmlFor="email"
+            className="text-ink-soft mb-2 block text-[13px]"
+          >
+            Email address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            defaultValue={state.email}
+            placeholder="you@example.com"
+            aria-invalid={state.field === 'email'}
+            aria-describedby="login-msg"
+            className={inputClass}
+          />
+        </div>
+        <PasswordInput
+          name="password"
+          label="Password"
+          autoComplete="current-password"
+          invalid={state.status === 'error' && state.field !== 'email'}
+          describedBy="login-msg"
         />
-        <button
-          type="submit"
-          disabled={pending}
-          className="bg-accent text-accent-ink focus-visible:outline-accent w-full rounded-xl px-4 py-3 text-[15px] font-medium transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60"
-        >
-          {pending ? 'Sending…' : 'Email me a sign-in link'}
-        </button>
+        <div className="flex justify-end">
+          <Link
+            href="/forgot-password"
+            className="text-ink-soft hover:text-ink text-[13px] underline-offset-4 hover:underline"
+          >
+            Forgot your password?
+          </Link>
+        </div>
         <p
           id="login-msg"
           aria-live="polite"
-          className="text-alert min-h-5 text-[13px]"
+          className="text-alert text-[13px] empty:hidden"
         >
           {state.status === 'error' ? state.message : ''}
         </p>
+        <SubmitButton label="Sign in" pendingLabel="Signing in…" />
       </form>
 
-      <div className="text-ink-faint my-4 flex items-center gap-3 text-[12px] tracking-[0.15em] uppercase">
-        <span className="bg-line h-px flex-1" />
-        or
-        <span className="bg-line h-px flex-1" />
-      </div>
-
-      <form action={signInWithGoogle}>
-        <input type="hidden" name="next" value={next} />
-        <button
-          type="submit"
-          className="border-line text-ink hover:border-ink-faint w-full rounded-xl border px-4 py-3 text-[15px] font-medium transition-colors"
+      {state.status === 'unconfirmed' && state.email && (
+        <div
+          role="alert"
+          className="bg-paper space-y-3 rounded-xl px-4 py-4 text-[14px]"
         >
-          Continue with Google
-        </button>
-      </form>
+          <p>
+            Confirm your email first. We sent a link to{' '}
+            <span className="font-medium">{state.email}</span> when you
+            registered.
+          </p>
+          <ResendConfirmation email={state.email} next={next} />
+        </div>
+      )}
     </div>
   );
 }
