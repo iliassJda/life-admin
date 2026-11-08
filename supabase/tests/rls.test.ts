@@ -84,7 +84,16 @@ beforeAll(async () => {
 
 afterAll(async () => {
   for (const account of [alice, bob]) {
-    if (account) await admin.auth.admin.deleteUser(account.id);
+    if (!account) continue;
+    const { data: files } = await admin.storage
+      .from('documents')
+      .list(account.id);
+    if (files?.length) {
+      await admin.storage
+        .from('documents')
+        .remove(files.map((f) => `${account.id}/${f.name}`));
+    }
+    await admin.auth.admin.deleteUser(account.id);
   }
 });
 
@@ -178,6 +187,67 @@ describe('no account can change another’s data', () => {
       channel: 'email',
     });
     expect(error).not.toBeNull();
+  });
+});
+
+describe('scanned documents stay private', () => {
+  const file = () => `${randomUUID()}.pdf`;
+  const pdf = new Blob(['%PDF-1.4 test'], { type: 'application/pdf' });
+  let alicePath = '';
+
+  beforeAll(async () => {
+    alicePath = `${alice.id}/${file()}`;
+    const { error } = await alice.client.storage
+      .from('documents')
+      .upload(alicePath, pdf, { contentType: 'application/pdf' });
+    if (error) throw error;
+  });
+
+  it('the owner can open their own file', async () => {
+    const { data, error } = await alice.client.storage
+      .from('documents')
+      .download(alicePath);
+    expect(error).toBeNull();
+    expect(data?.size).toBeGreaterThan(0);
+  });
+
+  it('another account cannot open, list or delete it', async () => {
+    const { data } = await bob.client.storage
+      .from('documents')
+      .download(alicePath);
+    expect(data).toBeNull();
+    const { data: listed } = await bob.client.storage
+      .from('documents')
+      .list(alice.id);
+    expect(listed ?? []).toEqual([]);
+    await bob.client.storage.from('documents').remove([alicePath]);
+    const { data: still } = await admin.storage
+      .from('documents')
+      .download(alicePath);
+    expect(still).not.toBeNull();
+  });
+
+  it('another account cannot upload into someone else’s folder', async () => {
+    const { error } = await bob.client.storage
+      .from('documents')
+      .upload(`${alice.id}/${file()}`, pdf, { contentType: 'application/pdf' });
+    expect(error).not.toBeNull();
+  });
+
+  it('an item cannot point at someone else’s file', async () => {
+    const { error } = await bob.client
+      .from('items')
+      .update({ file_path: alicePath })
+      .eq('id', bob.itemId);
+    expect(error).not.toBeNull();
+  });
+
+  it('signed-out visitors cannot open it', async () => {
+    const anon = createClient(URL, PUBLISHABLE, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data } = await anon.storage.from('documents').download(alicePath);
+    expect(data).toBeNull();
   });
 });
 

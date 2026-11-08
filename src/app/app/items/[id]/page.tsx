@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { repeatValue } from '@/lib/core/items';
 import { describeReminderDays } from '@/lib/core/settings';
 import { requireUser } from '@/lib/server/auth';
-import { deleteItem, updateItem } from '../actions';
+import { deleteItem, removeDocument, updateItem } from '../actions';
 import { DeleteButton } from '../delete-button';
 import { ItemForm } from '../item-form';
 
@@ -48,6 +48,37 @@ export default async function EditItemPage(
           reminderDays: own.map((r) => r.days_before).join(','),
         }}
       />
+      {item.file_path && (
+        <section
+          aria-labelledby="document-heading"
+          className="mt-14 border-t border-(--st-rule) pt-6"
+        >
+          <h2 id="document-heading" className="st-heading text-[26px]">
+            Document
+          </h2>
+          <p className="mt-2 text-[15px] text-(--st-dim)">
+            Stored privately. Links to it expire after a minute.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <a
+              href={`/app/items/${item.id}/document`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="st-btn-outline"
+            >
+              Open the document
+            </a>
+            <form action={removeDocument.bind(null, item.id)}>
+              <button
+                type="submit"
+                className="st-focus text-[15px] font-semibold text-(--st-dim) underline-offset-4 hover:text-(--st-white) hover:underline"
+              >
+                Delete the file, keep the item
+              </button>
+            </form>
+          </div>
+        </section>
+      )}
       <form
         action={deleteItem.bind(null, item.id)}
         className="mt-14 border-t border-(--st-rule) pt-6"

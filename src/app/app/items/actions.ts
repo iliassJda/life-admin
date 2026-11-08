@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { isOwnDocumentPath } from '@/lib/core/documents';
 import {
   parseItemForm,
   type ItemErrors,
@@ -33,6 +34,8 @@ function fieldsFrom(formData: FormData): Record<string, string> {
     reminderMode:
       formData.get('reminderMode') === 'custom' ? 'custom' : 'default',
     reminderDays: formData.getAll('reminderDays').map(String).join(','),
+    filePath: String(formData.get('filePath') ?? ''),
+    keepFile: formData.get('keepFile') === 'on' ? 'on' : '',
   };
 }
 
@@ -110,14 +113,22 @@ export async function createItem(
   if (!parsed.ok) return { errors: parsed.errors, values };
 
   const { supabase, id: userId } = await requireUser();
+  // A scanned file stays only when the person chose to keep it.
+  const filePath = isOwnDocumentPath(values.filePath, userId)
+    ? values.filePath
+    : null;
+  const keep = Boolean(filePath) && values.keepFile === 'on';
   const { data, error } = await supabase
     .from('items')
-    .insert(toRow(parsed.value))
+    .insert({ ...toRow(parsed.value), file_path: keep ? filePath : null })
     .select('id')
     .single();
   if (error || !data) return { errors: {}, message: SAVE_FAILED, values };
   if (!(await saveReminders(supabase, userId, data.id, parsed.reminders))) {
     return { errors: {}, message: SAVE_FAILED, values };
+  }
+  if (filePath && !keep) {
+    await supabase.storage.from('documents').remove([filePath]);
   }
   redirect('/app');
 }
@@ -148,6 +159,33 @@ export async function updateItem(
 
 export async function deleteItem(id: string) {
   const { supabase } = await requireUser();
-  await supabase.from('items').delete().eq('id', id);
+  const { data } = await supabase
+    .from('items')
+    .delete()
+    .eq('id', id)
+    .select('file_path');
+  const paths = (data ?? []).map((r) => r.file_path).filter(Boolean);
+  if (paths.length > 0) {
+    await supabase.storage.from('documents').remove(paths as string[]);
+  }
   redirect('/app');
+}
+
+/** Deletes the stored document but keeps the item. */
+export async function removeDocument(id: string) {
+  const { supabase } = await requireUser();
+  const { data: item } = await supabase
+    .from('items')
+    .select('file_path')
+    .eq('id', id)
+    .maybeSingle();
+  if (item?.file_path) {
+    const { error } = await supabase.storage
+      .from('documents')
+      .remove([item.file_path]);
+    if (!error) {
+      await supabase.from('items').update({ file_path: null }).eq('id', id);
+    }
+  }
+  redirect(`/app/items/${id}`);
 }

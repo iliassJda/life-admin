@@ -233,6 +233,29 @@ export function ItemForm({
         {error('reminders')}
       </fieldset>
 
+      {values.filePath && (
+        <div className="rounded-[3px] border border-(--st-rule) p-4">
+          <input type="hidden" name="filePath" value={values.filePath} />
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              name="keepFile"
+              defaultChecked={values.keepFile === 'on'}
+              className="mt-1 size-4 accent-(--st-yellow)"
+            />
+            <span>
+              <span className="block text-[15px] font-semibold">
+                Keep a copy of the document with this item
+              </span>
+              <span className="mt-1 block text-[14px] leading-relaxed text-(--st-dim)">
+                Stored privately; only you can open it. Leave this unticked and
+                the file is deleted as soon as you save.
+              </span>
+            </span>
+          </label>
+        </div>
+      )}
+
       {state.message && (
         <p role="alert" className="st-error">
           {state.message}
