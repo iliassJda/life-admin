@@ -15,17 +15,15 @@ export default async function EditItemPage(
   if (!UUID.test(id)) notFound();
 
   const { supabase } = await requireUser();
-  const { data: item } = await supabase
-    .from('items')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
+  const [{ data: item }, { data: rules }] = await Promise.all([
+    supabase.from('items').select('*').eq('id', id).maybeSingle(),
+    supabase
+      .from('reminder_rules')
+      .select('item_id, days_before')
+      .or(`item_id.is.null,item_id.eq.${id}`),
+  ]);
   if (!item) notFound();
 
-  const { data: rules } = await supabase
-    .from('reminder_rules')
-    .select('item_id, days_before')
-    .or(`item_id.is.null,item_id.eq.${item.id}`);
   const own = (rules ?? []).filter((r) => r.item_id === item.id);
   const defaults = (rules ?? []).filter((r) => r.item_id === null);
 

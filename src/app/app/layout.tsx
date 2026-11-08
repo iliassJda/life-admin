@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { site } from '@/lib/core/site';
-import { requireUser } from '@/lib/server/auth';
 import { Wordmark } from '../wordmark';
 import { NavLinks } from './nav-links';
 
@@ -10,9 +9,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default async function AppLayout({ children }: LayoutProps<'/app'>) {
-  await requireUser();
-
+export default function AppLayout({ children }: LayoutProps<'/app'>) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-(--st-rule)">
