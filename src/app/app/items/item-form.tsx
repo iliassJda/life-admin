@@ -13,6 +13,7 @@ import {
 } from '@/lib/core/items';
 import { REMINDER_DAY_OPTIONS, reminderDayLabel } from '@/lib/core/settings';
 import type { ItemFormState } from './actions';
+import { DateField } from './date-field';
 
 type Props = {
   action: (state: ItemFormState, formData: FormData) => Promise<ItemFormState>;
@@ -96,22 +97,18 @@ export function ItemForm({
         {error('name')}
       </div>
 
+      <div>
+        <DateField
+          name="keyDate"
+          label={DATE_LABELS[kind]}
+          defaultValue={values.keyDate}
+          invalid={Boolean(state.errors.keyDate)}
+          describedBy={state.errors.keyDate ? 'keyDate-error' : undefined}
+        />
+        {error('keyDate')}
+      </div>
+
       <div className="grid gap-6 sm:grid-cols-2">
-        <div>
-          <label htmlFor="keyDate" className="st-field-label">
-            {DATE_LABELS[kind]}
-          </label>
-          <input
-            id="keyDate"
-            name="keyDate"
-            type="date"
-            required
-            defaultValue={values.keyDate}
-            className={inputClass}
-            {...invalid('keyDate')}
-          />
-          {error('keyDate')}
-        </div>
         <div>
           <label htmlFor="repeat" className="st-field-label">
             Repeats
