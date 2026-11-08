@@ -35,6 +35,8 @@ function fieldsFrom(formData: FormData): Record<string, string> {
       formData.get('reminderMode') === 'custom' ? 'custom' : 'default',
     reminderDays: formData.getAll('reminderDays').map(String).join(','),
     filePath: String(formData.get('filePath') ?? ''),
+    unused: formData.get('unused') === 'on' ? 'on' : '',
+    unusedSince: String(formData.get('unusedSince') ?? ''),
     keepFile: formData.get('keepFile') === 'on' ? 'on' : '',
   };
 }
@@ -89,6 +91,15 @@ function validate(values: Record<string, string>) {
   return { ok: true as const, value: parsed.value, reminders };
 }
 
+// Keeps the original "marked unused" time when an unused item is saved again.
+function unusedSince(value: ItemInput, values: Record<string, string>) {
+  if (value.kind === 'document' || values.unused !== 'on') return null;
+  const since = Date.parse(values.unusedSince);
+  return Number.isNaN(since)
+    ? new Date().toISOString()
+    : new Date(since).toISOString();
+}
+
 function toRow(value: ItemInput) {
   return {
     kind: value.kind,
@@ -120,7 +131,11 @@ export async function createItem(
   const keep = Boolean(filePath) && values.keepFile === 'on';
   const { data, error } = await supabase
     .from('items')
-    .insert({ ...toRow(parsed.value), file_path: keep ? filePath : null })
+    .insert({
+      ...toRow(parsed.value),
+      unused_since: unusedSince(parsed.value, values),
+      file_path: keep ? filePath : null,
+    })
     .select('id')
     .single();
   if (error || !data) return { errors: {}, message: SAVE_FAILED, values };
@@ -145,7 +160,10 @@ export async function updateItem(
   const { supabase, id: userId } = await requireUser();
   const { data, error } = await supabase
     .from('items')
-    .update(toRow(parsed.value))
+    .update({
+      ...toRow(parsed.value),
+      unused_since: unusedSince(parsed.value, values),
+    })
     .eq('id', id)
     .select('id');
   if (error || data.length === 0) {

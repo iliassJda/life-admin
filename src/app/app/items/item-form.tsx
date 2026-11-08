@@ -232,6 +232,33 @@ export function ItemForm({
         {error('reminders')}
       </fieldset>
 
+      {kind !== 'document' && (
+        <div className="rounded-[3px] border border-(--st-rule) p-4">
+          <input
+            type="hidden"
+            name="unusedSince"
+            value={values.unusedSince ?? ''}
+          />
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              name="unused"
+              defaultChecked={values.unused === 'on'}
+              className="mt-1 size-4 accent-(--st-yellow)"
+            />
+            <span>
+              <span className="block text-[15px] font-semibold">
+                I don’t use this anymore
+              </span>
+              <span className="mt-1 block text-[14px] leading-relaxed text-(--st-dim)">
+                Your reminders will tell you to cancel before the next charge,
+                and Spending shows what cancelling saves.
+              </span>
+            </span>
+          </label>
+        </div>
+      )}
+
       {values.filePath && (
         <div className="rounded-[3px] border border-(--st-rule) p-4">
           <input type="hidden" name="filePath" value={values.filePath} />

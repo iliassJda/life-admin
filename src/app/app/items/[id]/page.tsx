@@ -44,6 +44,8 @@ export default async function EditItemPage(
           amount: item.amount === null ? '' : String(item.amount),
           currency: item.currency,
           notes: item.notes ?? '',
+          unused: item.unused_since ? 'on' : '',
+          unusedSince: item.unused_since ?? '',
           reminderMode: own.length > 0 ? 'custom' : 'default',
           reminderDays: own.map((r) => r.days_before).join(','),
         }}

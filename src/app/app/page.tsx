@@ -154,6 +154,11 @@ export default async function AppHome() {
                           {' · '}
                           {KIND_LABELS[item.kind]}
                         </span>
+                        {item.unused_since && (
+                          <span className="font-semibold text-(--st-amber)">
+                            {' · '}Cancel?
+                          </span>
+                        )}
                       </span>
                     </span>
                     <span className="st-num text-right text-[16px] font-semibold">

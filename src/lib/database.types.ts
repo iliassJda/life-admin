@@ -23,6 +23,7 @@ export type Database = {
           recurrence_interval: number | null;
           recurrence_unit:
             Database['public']['Enums']['recurrence_unit'] | null;
+          unused_since: string | null;
           updated_at: string;
           user_id: string;
         };
@@ -40,6 +41,7 @@ export type Database = {
           recurrence_interval?: number | null;
           recurrence_unit?:
             Database['public']['Enums']['recurrence_unit'] | null;
+          unused_since?: string | null;
           updated_at?: string;
           user_id?: string;
         };
@@ -56,6 +58,7 @@ export type Database = {
           recurrence_interval?: number | null;
           recurrence_unit?:
             Database['public']['Enums']['recurrence_unit'] | null;
+          unused_since?: string | null;
           updated_at?: string;
           user_id?: string;
         };

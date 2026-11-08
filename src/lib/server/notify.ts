@@ -13,6 +13,7 @@ export type ReminderTarget = {
   name: string;
   amount: number | null;
   currency: string;
+  unused_since?: string | null;
 };
 
 /**
@@ -28,7 +29,7 @@ export async function sendReminder(
   switch (channel) {
     case 'email': {
       const content = buildReminderEmail({
-        item,
+        item: { ...item, unused: Boolean(item.unused_since) },
         occurrenceDate,
         today: user.today,
         appUrl: process.env.APP_URL ?? 'http://localhost:3000',

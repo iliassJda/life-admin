@@ -10,6 +10,8 @@ export type ReminderEmailInput = {
     name: string;
     amount: number | null;
     currency: string;
+    /** Marked as no longer used: the email nudges to cancel. */
+    unused?: boolean;
   };
   occurrenceDate: LocalDate;
   /** The user's local date when the email is built. */
@@ -45,7 +47,9 @@ export function buildReminderEmail(input: ReminderEmailInput): EmailContent {
   const { item, occurrenceDate, today, appUrl } = input;
   const days = daysBetween(today, occurrenceDate);
   const verb = VERB[item.kind];
-  const subject = `${item.name} ${verb} ${when(days)}`;
+  const subject = item.unused
+    ? `Cancel ${item.name}? It ${verb} ${when(days)}`
+    : `${item.name} ${verb} ${when(days)}`;
   const date = formatLocalDate(occurrenceDate);
   const amount =
     item.amount !== null ? formatAmount(item.amount, item.currency) : null;
@@ -56,8 +60,9 @@ export function buildReminderEmail(input: ReminderEmailInput): EmailContent {
   const detail = amount
     ? `${item.name} ${verb} on ${date}, for ${amount}.`
     : `${item.name} ${verb} on ${date}.`;
-  const nudge =
-    item.kind === 'document'
+  const nudge = item.unused
+    ? `You marked this as no longer used. Cancel before ${date} to avoid paying again.`
+    : item.kind === 'document'
       ? 'If you need it, now is a good time to start the renewal.'
       : 'If you still want it, there is nothing to do. If not, now is the time to decide.';
 

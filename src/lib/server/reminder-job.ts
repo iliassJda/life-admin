@@ -117,7 +117,7 @@ export async function runReminders(now = new Date()): Promise<RunSummary> {
       db
         .from('items')
         .select(
-          'id, user_id, kind, name, key_date, recurrence_unit, recurrence_interval, amount, currency',
+          'id, user_id, kind, name, key_date, recurrence_unit, recurrence_interval, amount, currency, unused_since',
         )
         .in('user_id', userIds)
         .order('id')

@@ -219,6 +219,25 @@ describe('buildReminderEmail', () => {
     ).toBe('Passport expires today');
   });
 
+  it('nudges to cancel when the item is marked unused', () => {
+    const email = buildReminderEmail({
+      ...base,
+      occurrenceDate: '2026-12-15',
+      item: {
+        id: 'g',
+        kind: 'subscription',
+        name: 'Gym',
+        amount: 39.9,
+        currency: 'EUR',
+        unused: true,
+      },
+    });
+    expect(email.subject).toBe('Cancel Gym? It renews in 7 days');
+    expect(email.text).toContain(
+      'You marked this as no longer used. Cancel before 15 Dec 2026 to avoid paying again.',
+    );
+  });
+
   it('escapes names in the HTML', () => {
     const email = buildReminderEmail({
       ...base,
