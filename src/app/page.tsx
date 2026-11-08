@@ -1,14 +1,7 @@
-import { Archivo } from 'next/font/google';
 import { site } from '@/lib/core/site';
 import { DepartureBoard, MessageBoard } from './landing/departure-board';
-import { WaitlistForm } from './waitlist-form';
-import './station.css';
-
-const archivo = Archivo({
-  variable: '--font-archivo',
-  subsets: ['latin'],
-  axes: ['wdth'],
-});
+import { Wordmark } from './wordmark';
+import Link from 'next/link';
 
 const watches = [
   {
@@ -111,15 +104,6 @@ const horizon = [
   },
 ];
 
-function Wordmark({ className = '' }: { className?: string }) {
-  return (
-    <span className={`st-cond font-extrabold tracking-[-0.01em] ${className}`}>
-      {site.name}
-      <span className="text-(--st-yellow)">.</span>
-    </span>
-  );
-}
-
 function Arrow({ dir }: { dir: 'left' | 'up' | 'right' }) {
   const rotate = { left: 180, up: -90, right: 0 }[dir];
   return (
@@ -158,12 +142,39 @@ function Pictogram({ kind }: { kind: 'bell' | 'info' }) {
   );
 }
 
+function SignUpActions() {
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+      <Link href="/register" className="st-btn">
+        Create an account
+        <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4">
+          <path
+            d="M2 8h11M9 3.5 13.5 8 9 12.5"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            fill="none"
+          />
+        </svg>
+      </Link>
+      <p className="text-[15px] text-(--st-dim)">
+        Already have one?{' '}
+        <Link
+          href="/login"
+          className="font-semibold text-(--st-white) underline decoration-(--st-yellow) decoration-2 underline-offset-4 hover:text-(--st-yellow)"
+        >
+          Sign in
+        </Link>
+      </p>
+    </div>
+  );
+}
+
 const heading =
   'st-cond font-bold tracking-[-0.01em] leading-[0.98] text-balance';
 
 export default function Home() {
   return (
-    <div className={`${archivo.variable} station relative overflow-x-clip`}>
+    <div className="relative overflow-x-clip">
       {/* Concourse header */}
       <header className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-6 px-4 py-5 sm:px-8">
         <a
@@ -174,16 +185,18 @@ export default function Home() {
           <Wordmark />
         </a>
         <div className="flex items-center gap-5">
-          <p className="st-label hidden sm:block">
-            Early access{' '}
-            <span className="text-(--st-amber)">· Opening soon</span>
-          </p>
-          <a
-            href="#join"
+          <Link
+            href="/login"
+            className="st-semi hidden text-[14px] font-semibold text-(--st-white) underline-offset-4 hover:underline sm:inline"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/register"
             className="st-semi rounded-[3px] border border-(--st-yellow) px-4 py-2.5 text-[14px] font-semibold text-(--st-yellow) transition-colors hover:bg-(--st-yellow) hover:text-(--st-ink)"
           >
-            Join the waitlist
-          </a>
+            Create an account
+          </Link>
         </div>
       </header>
 
@@ -200,15 +213,15 @@ export default function Home() {
           </p>
           <DepartureBoard />
           <p className="mt-3 px-1 text-[13px] text-(--st-dim)">
-            Sample board. Your own items appear here once you’re in.
+            Sample board. Your own items appear here once you sign up.
           </p>
 
           <div className="mt-8 grid gap-8 lg:mt-12 lg:grid-cols-[1fr_auto] lg:items-start lg:gap-16">
             <p className="order-2 max-w-[46ch] text-[18px] leading-relaxed text-(--st-white) sm:text-[20px] lg:order-none">
               {site.description}
             </p>
-            <div className="order-1 lg:order-none lg:w-[560px]">
-              <WaitlistForm />
+            <div className="order-1 lg:order-none">
+              <SignUpActions />
             </div>
           </div>
         </section>
@@ -351,15 +364,8 @@ export default function Home() {
                 Where we’re heading.
               </h2>
               <p className="max-w-[40ch] text-[16px] leading-relaxed">
-                None of this exists yet — and early members help decide what
-                comes first.{' '}
-                <a
-                  href="#join"
-                  className="font-semibold underline decoration-2 underline-offset-4 hover:decoration-[3px]"
-                >
-                  Tell us what matters to you
-                </a>
-                .
+                None of this exists yet. People using {site.name} now help
+                decide what comes first.
               </p>
             </div>
 
@@ -421,12 +427,10 @@ export default function Home() {
             />
             <div className="mt-10 grid gap-8 md:grid-cols-[1fr_auto] md:items-start md:gap-14">
               <p className="max-w-[44ch] text-[18px] leading-relaxed">
-                We’re inviting a small first group to shape {site.name}. Leave
-                your email and you’ll be among the first in.
+                Add what renews or expires, choose when you want to hear about
+                it, and {site.name} emails you in time.
               </p>
-              <div className="md:w-[520px]">
-                <WaitlistForm />
-              </div>
+              <SignUpActions />
             </div>
           </div>
         </section>

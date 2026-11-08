@@ -37,12 +37,12 @@ One calm place for three things people usually track separately or not at all: s
 - Defaults: EUR, Europe/Brussels, reminders at 09:00.
 - Launch market: the EU, English UI only. Amounts are in euros by default, but any ISO currency code is stored.
 - Business model: freemium (a free tier with limits plus a paid tier). Price, tier limits and which features are paid are **undecided**.
-- Status: pre-launch, collecting sign-ups through a waitlist.
+- Status: Phase 1 is live at kalends.me with open sign-up (email and password, Google optional). The earlier waitlist form is retired; its entries stay in the `waitlist` table.
 - The roadmap shown publicly is not built yet. "Next": read dates from a photo, spending totals, how-to-cancel guides, an installable PWA with notifications. "Later": receipt forwarding by email, shared households, calendar sync, price-rise alerts, native apps.
 
 ## Brand Commitments
 
-- Name: **Kalends**, written with a trailing coloured full stop in the wordmark ("Kalends."). It is gold in the app's old look and signal yellow on the redesigned landing page.
+- Name: **Kalends**, written with a trailing coloured full stop in the wordmark ("Kalends."). It is signal yellow everywhere.
 - Voice: calm, plain, reassuring and lightly literary ("Hand over the remembering", "Add it once. Let it go."). Reminders are described as "calm", never alarming. The copy says what something does in plain words and avoids hype.
 - Privacy promises made publicly, which future work must keep true: files live in private storage behind short-lived links; uploading documents is optional; no advertising and no data brokers ("you are not the product"); users can delete their account and all its data in one step.
 
