@@ -238,6 +238,32 @@ describe('buildReminderEmail', () => {
     );
   });
 
+  it('adds the cancellation help link only for unused items', () => {
+    const item = {
+      id: 'n',
+      kind: 'subscription' as const,
+      name: 'Netflix',
+      amount: 15.99,
+      currency: 'EUR',
+    };
+    const cancelUrl = 'https://help.netflix.com/en/node/407';
+    const unused = buildReminderEmail({
+      ...base,
+      occurrenceDate: '2026-12-15',
+      cancelUrl,
+      item: { ...item, unused: true },
+    });
+    expect(unused.text).toContain(`How to cancel: ${cancelUrl}`);
+    expect(unused.html).toContain(`href="${cancelUrl}"`);
+    const inUse = buildReminderEmail({
+      ...base,
+      occurrenceDate: '2026-12-15',
+      cancelUrl,
+      item,
+    });
+    expect(inUse.text).not.toContain('How to cancel');
+  });
+
   it('escapes names in the HTML', () => {
     const email = buildReminderEmail({
       ...base,

@@ -17,6 +17,8 @@ export type ReminderEmailInput = {
   /** The user's local date when the email is built. */
   today: LocalDate;
   appUrl: string;
+  /** Official cancellation help, shown when the item is marked unused. */
+  cancelUrl?: string | null;
 };
 
 export type EmailContent = { subject: string; text: string; html: string };
@@ -45,6 +47,7 @@ function escapeHtml(value: string): string {
 /** The reminder email, worded calmly: what, when, and a link to decide. */
 export function buildReminderEmail(input: ReminderEmailInput): EmailContent {
   const { item, occurrenceDate, today, appUrl } = input;
+  const cancelUrl = item.unused ? (input.cancelUrl ?? null) : null;
   const days = daysBetween(today, occurrenceDate);
   const verb = VERB[item.kind];
   const subject = item.unused
@@ -70,6 +73,7 @@ export function buildReminderEmail(input: ReminderEmailInput): EmailContent {
     detail,
     '',
     nudge,
+    ...(cancelUrl ? ['', `How to cancel: ${cancelUrl}`] : []),
     '',
     `Open it in ${site.name}: ${itemUrl}`,
     '',
@@ -92,7 +96,12 @@ export function buildReminderEmail(input: ReminderEmailInput): EmailContent {
         </td></tr>
         <tr><td style="padding:0 28px;font:16px/1.6 Arial,Helvetica,sans-serif;color:#3b3e42;">
           <p style="margin:0 0 12px;">${escapeHtml(detail)}</p>
-          <p style="margin:0 0 24px;">${escapeHtml(nudge)}</p>
+          <p style="margin:0 0 ${cancelUrl ? '12' : '24'}px;">${escapeHtml(nudge)}</p>${
+            cancelUrl
+              ? `
+          <p style="margin:0 0 24px;"><a href="${escapeHtml(cancelUrl)}" style="color:#0a0b0c;font-weight:700;">How to cancel</a></p>`
+              : ''
+          }
         </td></tr>
         <tr><td style="padding:0 28px 32px;">
           <a href="${escapeHtml(itemUrl)}" style="display:inline-block;background:#ffc20e;color:#0a0b0c;font:700 15px Arial,Helvetica,sans-serif;text-decoration:none;padding:13px 20px;border-radius:3px;">Open in ${escapeHtml(site.name)}</a>

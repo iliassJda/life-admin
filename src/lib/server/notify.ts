@@ -1,4 +1,5 @@
 import 'server-only';
+import { findCancelGuide } from '@/lib/core/cancel-guides';
 import { buildReminderEmail } from '@/lib/core/reminder-email';
 import type { LocalDate } from '@/lib/core/dates';
 import type { ItemKind } from '@/lib/core/items';
@@ -36,6 +37,7 @@ export async function sendReminder(
     occurrenceDate,
     today: user.today,
     appUrl: process.env.APP_URL ?? 'http://localhost:3000',
+    cancelUrl: findCancelGuide(item.name)?.url ?? null,
   });
 
   switch (channel) {

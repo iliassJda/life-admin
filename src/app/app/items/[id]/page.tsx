@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
+import { findCancelGuide } from '@/lib/core/cancel-guides';
 import { repeatValue } from '@/lib/core/items';
 import { describeReminderDays } from '@/lib/core/settings';
 import { requireUser } from '@/lib/server/auth';
 import { deleteItem, removeDocument, updateItem } from '../actions';
 import { DeleteButton } from '../delete-button';
+import { CancelGuideSection } from './cancel-guide';
 import { ItemForm } from '../item-form';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -24,6 +26,7 @@ export default async function EditItemPage(
   ]);
   if (!item) notFound();
 
+  const cancelGuide = findCancelGuide(item.name);
   const own = (rules ?? []).filter((r) => r.item_id === item.id);
   const defaults = (rules ?? []).filter((r) => r.item_id === null);
 
@@ -50,6 +53,13 @@ export default async function EditItemPage(
           reminderDays: own.map((r) => r.days_before).join(','),
         }}
       />
+      {item.kind !== 'document' && cancelGuide && (
+        <CancelGuideSection
+          guide={cancelGuide}
+          unused={Boolean(item.unused_since)}
+        />
+      )}
+
       {item.file_path && (
         <section
           aria-labelledby="document-heading"
