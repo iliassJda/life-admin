@@ -1,139 +1,126 @@
 'use client';
 
-import { useId, useState } from 'react';
-import { daysInMonth } from '@/lib/core/dates';
+import { useRef, useState } from 'react';
+import { parseDate } from '@/lib/core/dates';
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
+/** "20261203" or "2026-12-03" style input → "03/12/2026" for display. */
+function toDisplay(iso: string | undefined): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? '');
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : '';
+}
 
-function split(value: string | undefined) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? '');
-  return match
-    ? {
-        year: match[1],
-        month: String(Number(match[2])),
-        day: String(Number(match[3])),
-      }
-    : { year: '', month: '', day: '' };
+/** Formats typed digits as dd/mm/yyyy, adding the slashes as you go. */
+function mask(raw: string): string {
+  const digits = raw.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+/** "03/12/2026" → "2026-12-03", or '' when incomplete or not a real date. */
+function toIso(display: string): string {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(display);
+  if (!match) return '';
+  const iso = `${match[3]}-${match[2]}-${match[1]}`;
+  try {
+    parseDate(iso);
+    return iso;
+  } catch {
+    return '';
+  }
 }
 
 /**
- * Day, month and year as three fields, so the order is the same on every
- * device (a native date picker follows the computer's region settings).
- * Submits one value as YYYY-MM-DD.
+ * A date field that always reads day/month/year, whatever the computer's
+ * region settings. Typing works as dd/mm/yyyy; the calendar button opens the
+ * browser's own date picker. Submits one value as YYYY-MM-DD.
  */
 export function DateField({
+  id,
   name,
-  label,
   defaultValue,
   invalid,
   describedBy,
 }: {
+  id: string;
   name: string;
-  label: string;
   defaultValue?: string;
   invalid?: boolean;
   describedBy?: string;
 }) {
-  const id = useId();
-  const [parts, setParts] = useState(() => split(defaultValue));
-  const thisYear = new Date().getFullYear();
-  const chosenYear = Number(parts.year) || thisYear;
-  const firstYear = Math.min(thisYear - 1, chosenYear);
-  const lastYear = Math.max(thisYear + 15, chosenYear);
-  const years = Array.from({ length: lastYear - firstYear + 1 }, (_, i) =>
-    String(firstYear + i),
-  );
-  // Leap-year aware: February 2028 offers 29 days, February 2027 offers 28.
-  const maxDay =
-    parts.month !== '' ? daysInMonth(chosenYear, Number(parts.month)) : 31;
-
-  function update(next: Partial<typeof parts>) {
-    setParts((prev) => {
-      const merged = { ...prev, ...next };
-      const limit =
-        merged.month !== ''
-          ? daysInMonth(Number(merged.year) || thisYear, Number(merged.month))
-          : 31;
-      if (merged.day !== '' && Number(merged.day) > limit) {
-        merged.day = String(limit);
-      }
-      return merged;
-    });
-  }
-
-  const value =
-    parts.year && parts.month && parts.day
-      ? `${parts.year}-${parts.month.padStart(2, '0')}-${parts.day.padStart(2, '0')}`
-      : '';
-  const shared = {
-    'aria-invalid': invalid,
-    'aria-describedby': describedBy,
-    required: true,
-  };
+  const [text, setText] = useState(() => toDisplay(defaultValue));
+  const picker = useRef<HTMLInputElement>(null);
+  const iso = toIso(text);
+  const notReal = text.length === 10 && !iso;
 
   return (
-    <fieldset>
-      <legend id={`${id}-legend`} className="st-field-label">
-        {label}
-      </legend>
-      <input type="hidden" name={name} value={value} />
-      <div className="grid grid-cols-[5.5rem_1fr_6.5rem] gap-2">
-        <select
-          aria-label="Day"
-          value={parts.day}
-          onChange={(e) => update({ day: e.target.value })}
-          className="st-input"
-          {...shared}
+    <div className="relative">
+      <input
+        id={id}
+        type="text"
+        inputMode="numeric"
+        autoComplete="off"
+        placeholder="dd/mm/yyyy"
+        maxLength={10}
+        required
+        value={text}
+        onChange={(e) => setText(mask(e.target.value))}
+        aria-invalid={invalid || notReal}
+        aria-describedby={describedBy}
+        className="st-input st-num pr-14"
+      />
+      <input type="hidden" name={name} value={iso} />
+      {/* The browser's own calendar, opened from the button below. */}
+      <input
+        ref={picker}
+        type="date"
+        tabIndex={-1}
+        aria-hidden="true"
+        value={iso}
+        onChange={(e) => setText(toDisplay(e.target.value))}
+        className="pointer-events-none absolute right-0 bottom-0 h-full w-12 opacity-0"
+      />
+      <button
+        type="button"
+        aria-label="Open calendar"
+        onClick={() => {
+          const el = picker.current;
+          if (!el) return;
+          try {
+            el.showPicker();
+          } catch {
+            el.focus();
+          }
+        }}
+        className="st-focus absolute inset-y-1.5 right-1.5 grid w-10 place-items-center rounded-[2px] text-(--st-dim) hover:text-(--st-white)"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 20 20"
+          className="size-5"
+          fill="none"
         >
-          <option value="">Day</option>
-          {Array.from({ length: maxDay }, (_, i) => (
-            <option key={i + 1} value={String(i + 1)}>
-              {i + 1}
-            </option>
-          ))}
-        </select>
-        <select
-          aria-label="Month"
-          value={parts.month}
-          onChange={(e) => update({ month: e.target.value })}
-          className="st-input"
-          {...shared}
-        >
-          <option value="">Month</option>
-          {MONTHS.map((m, i) => (
-            <option key={m} value={String(i + 1)}>
-              {m}
-            </option>
-          ))}
-        </select>
-        <select
-          aria-label="Year"
-          value={parts.year}
-          onChange={(e) => update({ year: e.target.value })}
-          className="st-input"
-          {...shared}
-        >
-          <option value="">Year</option>
-          {years.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
-      </div>
-    </fieldset>
+          <rect
+            x="2.5"
+            y="4"
+            width="15"
+            height="13.5"
+            rx="1"
+            stroke="currentColor"
+            strokeWidth="1.6"
+          />
+          <path
+            d="M2.5 8h15M6.5 2v4M13.5 2v4"
+            stroke="currentColor"
+            strokeWidth="1.6"
+          />
+        </svg>
+      </button>
+      {notReal && (
+        <p className="st-error mt-1.5" role="alert">
+          That date doesn’t exist. Check the day and month.
+        </p>
+      )}
+    </div>
   );
 }

@@ -97,18 +97,20 @@ export function ItemForm({
         {error('name')}
       </div>
 
-      <div>
-        <DateField
-          name="keyDate"
-          label={DATE_LABELS[kind]}
-          defaultValue={values.keyDate}
-          invalid={Boolean(state.errors.keyDate)}
-          describedBy={state.errors.keyDate ? 'keyDate-error' : undefined}
-        />
-        {error('keyDate')}
-      </div>
-
       <div className="grid gap-6 sm:grid-cols-2">
+        <div>
+          <label htmlFor="keyDate" className="st-field-label">
+            {DATE_LABELS[kind]}
+          </label>
+          <DateField
+            id="keyDate"
+            name="keyDate"
+            defaultValue={values.keyDate}
+            invalid={Boolean(state.errors.keyDate)}
+            describedBy={state.errors.keyDate ? 'keyDate-error' : undefined}
+          />
+          {error('keyDate')}
+        </div>
         <div>
           <label htmlFor="repeat" className="st-field-label">
             Repeats
