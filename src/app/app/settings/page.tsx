@@ -1,20 +1,25 @@
 import type { Metadata } from 'next';
 import { requireUser } from '@/lib/server/auth';
 import { DeleteAccount } from './delete-account';
+import { PhoneSection } from './phone-section';
 import { SettingsForm } from './settings-form';
 
 export const metadata: Metadata = { title: 'Settings' };
 
 export default async function SettingsPage() {
   const { supabase, id, email } = await requireUser();
-  const [{ data: profile }, { data: rules }] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('time_zone, reminder_time, email_reminders')
-      .eq('id', id)
-      .maybeSingle(),
-    supabase.from('reminder_rules').select('days_before').is('item_id', null),
-  ]);
+  const [{ data: profile }, { data: rules }, { count: deviceCount }] =
+    await Promise.all([
+      supabase
+        .from('profiles')
+        .select('time_zone, reminder_time, email_reminders')
+        .eq('id', id)
+        .maybeSingle(),
+      supabase.from('reminder_rules').select('days_before').is('item_id', null),
+      supabase
+        .from('push_subscriptions')
+        .select('id', { count: 'exact', head: true }),
+    ]);
 
   const timeZone = profile?.time_zone ?? 'Europe/Brussels';
   const zones = Intl.supportedValuesOf('timeZone');
@@ -37,6 +42,16 @@ export default async function SettingsPage() {
             defaultDays: (rules ?? []).map((r) => r.days_before),
           }}
         />
+      </section>
+
+      <section
+        aria-labelledby="phone-heading"
+        className="mt-16 border-t border-(--st-rule) pt-8"
+      >
+        <h2 id="phone-heading" className="st-heading mb-6 text-[30px]">
+          On your phone
+        </h2>
+        <PhoneSection deviceCount={deviceCount ?? 0} />
       </section>
 
       <section

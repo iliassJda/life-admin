@@ -146,6 +146,37 @@ export type Database = {
         };
         Relationships: [];
       };
+      push_subscriptions: {
+        Row: {
+          auth: string;
+          created_at: string;
+          device: string | null;
+          endpoint: string;
+          id: string;
+          p256dh: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          auth: string;
+          created_at?: string;
+          device?: string | null;
+          endpoint: string;
+          id?: string;
+          p256dh: string;
+          user_id?: string;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          device?: string | null;
+          endpoint?: string;
+          id?: string;
+          p256dh?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       reminder_rules: {
         Row: {
           created_at: string;
@@ -216,7 +247,7 @@ export type Database = {
     };
     Enums: {
       item_kind: 'subscription' | 'document' | 'contract';
-      notification_channel: 'email';
+      notification_channel: 'email' | 'push';
       notification_status: 'pending' | 'sent' | 'failed';
       recurrence_unit: 'day' | 'week' | 'month' | 'year';
     };
@@ -347,7 +378,7 @@ export const Constants = {
   public: {
     Enums: {
       item_kind: ['subscription', 'document', 'contract'],
-      notification_channel: ['email'],
+      notification_channel: ['email', 'push'],
       notification_status: ['pending', 'sent', 'failed'],
       recurrence_unit: ['day', 'week', 'month', 'year'],
     },

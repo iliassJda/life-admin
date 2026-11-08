@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { site } from '@/lib/core/site';
 import { Wordmark } from '../wordmark';
 import { NavLinks } from './nav-links';
+import { ServiceWorker } from './service-worker';
 
 export const metadata: Metadata = {
   title: site.name,
@@ -50,6 +51,7 @@ export default function AppLayout({ children }: LayoutProps<'/app'>) {
           </div>
         </div>
       </header>
+      <ServiceWorker />
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-8 sm:py-14">
         {children}
       </main>

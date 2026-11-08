@@ -2,6 +2,7 @@ import 'server-only';
 import { todayIn } from '@/lib/core/dates';
 import { dueReminders, type DueReminder } from '@/lib/core/reminders';
 import { sendReminder, type Channel, type ReminderTarget } from './notify';
+import { pushConfigured } from './push';
 import { supabaseAdmin as db } from './supabase';
 
 const MAX_ATTEMPTS = 3;
@@ -101,16 +102,31 @@ async function claim(
 export async function runReminders(now = new Date()): Promise<RunSummary> {
   const summary: RunSummary = { due: 0, sent: 0, failed: 0, skipped: 0 };
 
-  const profiles = await fetchAll((from, to) =>
-    db
-      .from('profiles')
-      .select('id, time_zone, reminder_time, email_reminders')
-      .eq('email_reminders', true)
-      .order('id')
-      .range(from, to),
+  // Everyone with at least one channel: email turned on, or a device for push.
+  const [profiles, devices] = await Promise.all([
+    fetchAll((from, to) =>
+      db
+        .from('profiles')
+        .select('id, time_zone, reminder_time, email_reminders')
+        .order('id')
+        .range(from, to),
+    ),
+    pushConfigured()
+      ? fetchAll((from, to) =>
+          db
+            .from('push_subscriptions')
+            .select('user_id')
+            .order('id')
+            .range(from, to),
+        )
+      : Promise.resolve([] as { user_id: string }[]),
+  ]);
+  const withDevices = new Set(devices.map((d) => d.user_id));
+  const reachable = profiles.filter(
+    (p) => p.email_reminders || withDevices.has(p.id),
   );
-  if (profiles.length === 0) return summary;
-  const userIds = profiles.map((p) => p.id);
+  if (reachable.length === 0) return summary;
+  const userIds = reachable.map((p) => p.id);
 
   const [items, rules] = await Promise.all([
     fetchAll((from, to) =>
@@ -133,7 +149,7 @@ export async function runReminders(now = new Date()): Promise<RunSummary> {
     ),
   ]);
 
-  for (const profile of profiles) {
+  for (const profile of reachable) {
     const own = items.filter((i) => i.user_id === profile.id);
     if (own.length === 0) continue;
     const due = dueReminders(
@@ -142,18 +158,21 @@ export async function runReminders(now = new Date()): Promise<RunSummary> {
       {
         timeZone: profile.time_zone,
         reminderTime: profile.reminder_time,
-        emailReminders: profile.email_reminders,
+        emailReminders: true,
       },
       now,
     );
     if (due.length === 0) continue;
-    summary.due += due.length;
 
-    const { data: auth } = await db.auth.admin.getUserById(profile.id);
-    const email = auth.user?.email;
-    if (!email) {
-      summary.skipped += due.length;
-      continue;
+    const channels: Channel[] = [];
+    if (profile.email_reminders) channels.push('email');
+    if (withDevices.has(profile.id)) channels.push('push');
+    summary.due += due.length * channels.length;
+
+    let email: string | null = null;
+    if (profile.email_reminders) {
+      const { data: auth } = await db.auth.admin.getUserById(profile.id);
+      email = auth.user?.email ?? null;
     }
     const user = {
       id: profile.id,
@@ -163,39 +182,40 @@ export async function runReminders(now = new Date()): Promise<RunSummary> {
     const byId = new Map<string, ReminderTarget>(own.map((i) => [i.id, i]));
 
     for (const reminder of due) {
-      const id = await claim(profile.id, reminder, 'email', now);
-      if (!id) {
-        summary.skipped++;
-        continue;
-      }
-      try {
-        await sendReminder(
-          user,
-          byId.get(reminder.itemId)!,
-          reminder.occurrenceDate,
-          'email',
-        );
-        await db
-          .from('notifications_sent')
-          .update({
-            status: 'sent',
-            sent_at: new Date().toISOString(),
-            last_error: null,
-          })
-          .eq('id', id);
-        summary.sent++;
-      } catch (err) {
-        await db
-          .from('notifications_sent')
-          .update({
-            status: 'failed',
-            last_error: String(err instanceof Error ? err.message : err).slice(
-              0,
-              500,
-            ),
-          })
-          .eq('id', id);
-        summary.failed++;
+      for (const channel of channels) {
+        const id = await claim(profile.id, reminder, channel, now);
+        if (!id) {
+          summary.skipped++;
+          continue;
+        }
+        try {
+          await sendReminder(
+            user,
+            byId.get(reminder.itemId)!,
+            reminder.occurrenceDate,
+            channel,
+          );
+          await db
+            .from('notifications_sent')
+            .update({
+              status: 'sent',
+              sent_at: new Date().toISOString(),
+              last_error: null,
+            })
+            .eq('id', id);
+          summary.sent++;
+        } catch (err) {
+          await db
+            .from('notifications_sent')
+            .update({
+              status: 'failed',
+              last_error: String(
+                err instanceof Error ? err.message : err,
+              ).slice(0, 500),
+            })
+            .eq('id', id);
+          summary.failed++;
+        }
       }
     }
   }

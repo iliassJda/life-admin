@@ -3,10 +3,15 @@ import { buildReminderEmail } from '@/lib/core/reminder-email';
 import type { LocalDate } from '@/lib/core/dates';
 import type { ItemKind } from '@/lib/core/items';
 import { sendEmail } from './email';
+import { sendPushToUser } from './push';
 
-export type Channel = 'email';
+export type Channel = 'email' | 'push';
 
-export type ReminderUser = { id: string; email: string; today: LocalDate };
+export type ReminderUser = {
+  id: string;
+  email: string | null;
+  today: LocalDate;
+};
 export type ReminderTarget = {
   id: string;
   kind: ItemKind;
@@ -17,8 +22,8 @@ export type ReminderTarget = {
 };
 
 /**
- * The single place a reminder leaves the app. New channels (web push, native
- * push) are added here; the scheduling logic never changes.
+ * The single place a reminder leaves the app. Each channel words the same
+ * reminder; the scheduling logic never changes when a channel is added.
  */
 export async function sendReminder(
   user: ReminderUser,
@@ -26,15 +31,33 @@ export async function sendReminder(
   occurrenceDate: LocalDate,
   channel: Channel,
 ): Promise<void> {
+  const content = buildReminderEmail({
+    item: { ...item, unused: Boolean(item.unused_since) },
+    occurrenceDate,
+    today: user.today,
+    appUrl: process.env.APP_URL ?? 'http://localhost:3000',
+  });
+
   switch (channel) {
     case 'email': {
-      const content = buildReminderEmail({
-        item: { ...item, unused: Boolean(item.unused_since) },
-        occurrenceDate,
-        today: user.today,
-        appUrl: process.env.APP_URL ?? 'http://localhost:3000',
-      });
+      if (!user.email) throw new Error('No email address on the account');
       await sendEmail({ ...content, to: user.email });
+      return;
+    }
+    case 'push': {
+      const { devices, delivered } = await sendPushToUser(user.id, {
+        title: content.subject,
+        body: content.text.split('\n')[0],
+        url: `/app/items/${item.id}`,
+        tag: `${item.id}-${occurrenceDate}`,
+      });
+      if (delivered === 0) {
+        throw new Error(
+          devices === 0
+            ? 'No devices with notifications on'
+            : 'No device accepted the notification',
+        );
+      }
       return;
     }
   }

@@ -251,6 +251,30 @@ describe('scanned documents stay private', () => {
   });
 });
 
+describe('notification devices stay private', () => {
+  const device = (who: string) => ({
+    endpoint: `https://push.invalid/${who}-${randomUUID()}`,
+    p256dh: 'key',
+    auth: 'auth',
+  });
+
+  it('each account sees only its own devices', async () => {
+    const { error } = await alice.client
+      .from('push_subscriptions')
+      .insert({ user_id: alice.id, ...device('alice') });
+    expect(error).toBeNull();
+    const { data } = await bob.client.from('push_subscriptions').select('id');
+    expect(data ?? []).toEqual([]);
+  });
+
+  it('no account can add a device in someone else’s name', async () => {
+    const { error } = await bob.client
+      .from('push_subscriptions')
+      .insert({ user_id: alice.id, ...device('bob') });
+    expect(error).not.toBeNull();
+  });
+});
+
 describe('signed-out visitors', () => {
   const anon = createClient(URL, PUBLISHABLE, {
     auth: { persistSession: false, autoRefreshToken: false },
