@@ -8,8 +8,35 @@ import {
   type CurrencySpend,
 } from '@/lib/core/spend';
 import { requireUser } from '@/lib/server/auth';
+import { SpendingBoard, type BoardRow } from './spending-board';
 
 export const metadata: Metadata = { title: 'Spending' };
+
+// Subscriptions first (the roadmap's headline), then everything together.
+function boardRows(group: CurrencySpend): BoardRow[] {
+  const rows: BoardRow[] = [];
+  const hasSubs = group.subscriptionsYearly > 0;
+  const hasOthers = group.yearly !== group.subscriptionsYearly;
+  if (hasSubs) {
+    rows.push({
+      period: 'Per month',
+      what: 'Subs',
+      amount: group.subscriptionsMonthly,
+    });
+    rows.push({
+      period: 'Per year',
+      what: 'Subs',
+      amount: group.subscriptionsYearly,
+    });
+  }
+  if (hasOthers && !hasSubs) {
+    rows.push({ period: 'Per month', what: 'All', amount: group.monthly });
+  }
+  if (hasOthers) {
+    rows.push({ period: 'Per year', what: 'All', amount: group.yearly });
+  }
+  return rows;
+}
 
 function Breakdown({ group }: { group: CurrencySpend }) {
   const money = (n: number) => formatAmount(n, group.currency);
@@ -110,30 +137,25 @@ export default async function SpendingPage() {
     <div>
       <h1 className="st-heading text-[44px] sm:text-[56px]">Spending</h1>
 
-      <p className="st-heading mt-8 max-w-[22ch] text-[32px] sm:text-[44px]">
-        Your subscriptions cost{' '}
-        <span className="st-num text-(--st-amber)">
-          {money(main.subscriptionsMonthly)}
-        </span>{' '}
-        a month,{' '}
-        <span className="st-num text-(--st-amber)">
-          {money(main.subscriptionsYearly)}
-        </span>{' '}
-        a year.
+      <p className="sr-only">
+        Your subscriptions cost {money(main.subscriptionsMonthly)} a month,{' '}
+        {money(main.subscriptionsYearly)} a year. With contracts and cover
+        included, {money(main.monthly)} a month, {money(main.yearly)} a year.
       </p>
-      {main.yearly !== main.subscriptionsYearly && (
-        <p className="mt-4 text-[17px] text-(--st-dim)">
-          With contracts and cover included:{' '}
-          <span className="st-num font-semibold text-(--st-white)">
-            {money(main.monthly)}
-          </span>{' '}
-          a month,{' '}
-          <span className="st-num font-semibold text-(--st-white)">
-            {money(main.yearly)}
-          </span>{' '}
-          a year.
+      <div className="mt-8">
+        <SpendingBoard
+          rows={boardRows(main)}
+          currency={main.currency}
+          stamp={new Intl.DateTimeFormat('en-GB', {
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'Europe/Brussels',
+          }).format(new Date())}
+        />
+        <p className="mt-3 px-1 text-[13px] text-(--st-dim)">
+          Subs = subscriptions. All = subscriptions plus contracts and cover.
         </p>
-      )}
+      </div>
 
       {unusedRows.length > 0 && (
         <section
