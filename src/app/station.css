@@ -1,0 +1,395 @@
+/*
+ * Landing page world: a European station concourse.
+ * Scoped to .station so the signed-in app keeps its own tokens.
+ */
+
+.station {
+  --st-black: #0a0b0c;
+  --st-housing: #17191c;
+  --st-board: #0f1012;
+  --st-rule: #2c2f34;
+  --st-tile-top: #26282c;
+  --st-tile-bot: #1f2124;
+  --st-white: #f2efe7;
+  --st-dim: #a9a59c;
+  --st-amber: #ffb000;
+  --st-red: #ff5a43;
+  --st-yellow: #ffc20e;
+  --st-yellow-deep: #f2b400;
+  --st-enamel: #e7eaea;
+  --st-ink: #0a0b0c;
+  --st-ink-soft: #3b3e42;
+
+  background: var(--st-black);
+  color: var(--st-white);
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: 'wdth' 100;
+  font-feature-settings: 'tnum' 0;
+}
+
+:root:has(.station) body {
+  background: #0a0b0c;
+  color-scheme: dark;
+  scrollbar-color: #3a3d42 #0a0b0c;
+}
+
+.station ::selection {
+  background: var(--st-yellow);
+  color: var(--st-ink);
+}
+
+/* Width axis is the system: condensed for signage, normal for reading. */
+.st-cond {
+  font-variation-settings: 'wdth' 68;
+}
+.st-semi {
+  font-variation-settings: 'wdth' 84;
+}
+.st-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Board ------------------------------------------------------------------ */
+
+.st-board {
+  background: linear-gradient(180deg, #1c1e21, var(--st-housing) 40%, #141618);
+  border: 1px solid #2a2d31;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 40px 80px -40px rgba(0, 0, 0, 0.9),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.st-face {
+  container-type: inline-size;
+  background: var(--st-board);
+  border-radius: 3px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.st-row {
+  --gap: max(2px, 0.28cqi);
+  --tw: calc((100cqi - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--gap);
+}
+
+.st-flaps {
+  display: flex;
+  flex: none;
+  gap: var(--gap);
+}
+
+.st-tile,
+.st-gap {
+  width: var(--tw);
+  height: calc(var(--tw) * 1.5);
+  flex: none;
+}
+
+.st-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: max(1.5px, calc(var(--tw) * 0.08));
+  background: linear-gradient(
+    180deg,
+    var(--st-tile-top) 0 49.4%,
+    #0a0b0c 49.4% 50.6%,
+    var(--st-tile-bot) 50.6% 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 1px 1px rgba(0, 0, 0, 0.6);
+  font-size: calc(var(--tw) * 1.22);
+  line-height: 1;
+  font-weight: 700;
+  font-variation-settings: 'wdth' 72;
+  font-variant-numeric: tabular-nums;
+  color: var(--tone, var(--st-white));
+}
+
+.st-tile > span {
+  display: block;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.st-tone-amber {
+  --tone: var(--st-amber);
+}
+.st-tone-red {
+  --tone: var(--st-red);
+}
+.st-tone-dim {
+  --tone: var(--st-dim);
+}
+
+/* Until the board is live, letters stay hidden; reveal anyway without JS. */
+.st-flaps:not([data-live]) .st-tile > span {
+  visibility: hidden;
+  animation: st-reveal 0s 1.6s forwards;
+}
+
+@keyframes st-reveal {
+  to {
+    visibility: visible;
+  }
+}
+
+.st-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--st-dim);
+  font-variation-settings: 'wdth' 84;
+}
+
+.st-msg--narrow {
+  display: none;
+}
+
+@container (max-width: 640px) {
+  .st-msg--wide {
+    display: none;
+  }
+  .st-msg--narrow {
+    display: flex;
+  }
+  .st-field--type,
+  .st-gap--type {
+    display: none;
+  }
+  .st-item-row[data-empty] {
+    display: none;
+  }
+  .st-item-row {
+    /* A hair over 24 columns of slack keeps sub-pixel sums from wrapping. */
+    --cols: 24.2 !important;
+    flex-wrap: wrap;
+    row-gap: calc(var(--gap) * 2);
+  }
+  .st-item-row + .st-item-row {
+    margin-top: calc(var(--tw) * 0.6);
+  }
+  .st-field--remarks {
+    order: 5;
+  }
+  .st-gap--amount,
+  .st-gap--remarks {
+    display: none;
+  }
+  .st-field--amount {
+    order: 6;
+    margin-left: auto;
+  }
+  .st-colheads--wide {
+    display: none;
+  }
+}
+
+@container (min-width: 641px) {
+  .st-colheads--narrow {
+    display: none;
+  }
+}
+
+/* Signage controls ------------------------------------------------------- */
+
+.st-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 3px;
+  background: var(--st-yellow);
+  color: var(--st-ink);
+  font-weight: 750;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-variation-settings: 'wdth' 76;
+  transition:
+    background-color 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.st-btn:hover {
+  background: #ffd23f;
+}
+.st-btn:active {
+  transform: translateY(1px);
+}
+.st-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.st-focus:focus-visible,
+.st-btn:focus-visible,
+.st-chip:focus-visible,
+.station a:focus-visible {
+  outline: 2px solid var(--st-yellow);
+  outline-offset: 3px;
+}
+
+.st-on-yellow a:focus-visible,
+.st-on-light a:focus-visible {
+  outline-color: var(--st-ink);
+}
+
+.st-input {
+  min-height: 52px;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #3a3d42;
+  border-radius: 3px;
+  background: #121316;
+  padding: 0 16px;
+  color: var(--st-white);
+  caret-color: var(--st-amber);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 160ms ease;
+}
+.st-input::placeholder {
+  color: #8f8b83;
+}
+.st-input:focus {
+  border-color: var(--st-yellow);
+}
+.st-input[aria-invalid='true'] {
+  border-color: var(--st-red);
+}
+
+.st-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid #3f4247;
+  border-radius: 3px;
+  color: var(--st-white);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-variation-settings: 'wdth' 80;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.st-chip:hover:not(:disabled) {
+  border-color: var(--st-amber);
+  color: var(--st-amber);
+}
+.st-chip:disabled {
+  border-color: #2a2d31;
+  color: #75726b;
+  cursor: default;
+}
+
+/* Toggle chips in the follow-up question. */
+.st-toggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #3f4247;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--st-white);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.peer:checked + .st-toggle {
+  background: var(--st-yellow);
+  border-color: var(--st-yellow);
+  color: var(--st-ink);
+}
+.peer:focus-visible + .st-toggle {
+  outline: 2px solid var(--st-yellow);
+  outline-offset: 3px;
+}
+
+/* Route diagram ---------------------------------------------------------- */
+
+.st-route {
+  position: relative;
+  display: grid;
+  gap: 40px;
+}
+
+.st-route::before {
+  content: '';
+  position: absolute;
+  background: var(--st-ink);
+  left: 13px;
+  top: 14px;
+  bottom: 14px;
+  width: 6px;
+}
+
+.st-stop {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 20px;
+}
+
+.st-stop-dot {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--st-enamel);
+  border: 6px solid var(--st-ink);
+}
+.st-stop[data-terminus] .st-stop-dot {
+  background: var(--st-yellow);
+}
+
+@media (min-width: 900px) {
+  .st-route {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .st-route::before {
+    left: 16px;
+    right: calc((100% - 64px) / 3 - 16px);
+    top: 13px;
+    bottom: auto;
+    width: auto;
+    height: 6px;
+  }
+  .st-stop {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Motion ----------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-flaps:not([data-live]) .st-tile > span {
+    visibility: visible;
+    animation: none;
+  }
+  .st-btn,
+  .st-chip,
+  .st-toggle,
+  .st-input {
+    transition: none;
+  }
+}

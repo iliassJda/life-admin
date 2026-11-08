@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-08T12:00:00Z",
+  "title": "Design System: Kalends",
+  "extensions": {
+    "scope": "Landing world only, tokens scoped under .station (src/app/station.css). The signed-in app (src/app/app/*, src/app/login/*) keeps its older cream-paper, Fraunces/Geist look from src/app/globals.css; out of scope, not yet migrated.",
+    "colorMeta": {
+      "concourse-black": { "role": "neutral", "displayName": "Concourse Black", "canonical": "#0a0b0c", "cssVar": "--st-black", "tonalRamp": ["oklch(12% 0.003 250)", "oklch(15% 0.003 250)", "oklch(25% 0.004 250)", "oklch(37% 0.005 250)", "oklch(50% 0.005 250)", "oklch(65% 0.004 250)", "oklch(80% 0.003 250)", "oklch(95% 0.002 250)"] },
+      "board-housing": { "role": "neutral", "displayName": "Board Housing", "canonical": "#17191c", "cssVar": "--st-housing", "tonalRamp": ["oklch(15% 0.005 250)", "oklch(21% 0.006 250)", "oklch(30% 0.007 250)", "oklch(40% 0.007 250)", "oklch(52% 0.006 250)", "oklch(66% 0.005 250)", "oklch(80% 0.004 250)", "oklch(95% 0.002 250)"] },
+      "board-face": { "role": "neutral", "displayName": "Board Face", "canonical": "#0f1012", "cssVar": "--st-board", "tonalRamp": ["oklch(15% 0.004 250)", "oklch(18% 0.004 250)", "oklch(28% 0.005 250)", "oklch(40% 0.005 250)", "oklch(52% 0.005 250)", "oklch(66% 0.004 250)", "oklch(80% 0.003 250)", "oklch(95% 0.002 250)"] },
+      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "#2c2f34", "cssVar": "--st-rule", "tonalRamp": ["oklch(15% 0.008 255)", "oklch(22% 0.009 255)", "oklch(30% 0.01 255)", "oklch(40% 0.01 255)", "oklch(52% 0.009 255)", "oklch(66% 0.007 255)", "oklch(80% 0.005 255)", "oklch(95% 0.002 255)"] },
+      "tile-top": { "role": "neutral", "displayName": "Tile Top", "canonical": "#26282c", "cssVar": "--st-tile-top", "tonalRamp": ["oklch(15% 0.005 255)", "oklch(22% 0.006 255)", "oklch(28% 0.007 255)", "oklch(40% 0.007 255)", "oklch(52% 0.006 255)", "oklch(66% 0.005 255)", "oklch(80% 0.004 255)", "oklch(95% 0.002 255)"] },
+      "tile-bottom": { "role": "neutral", "displayName": "Tile Bottom", "canonical": "#1f2124", "cssVar": "--st-tile-bot", "tonalRamp": ["oklch(15% 0.005 255)", "oklch(21% 0.006 255)", "oklch(26% 0.006 255)", "oklch(40% 0.007 255)", "oklch(52% 0.006 255)", "oklch(66% 0.005 255)", "oklch(80% 0.004 255)", "oklch(95% 0.002 255)"] },
+      "flap-white": { "role": "neutral", "displayName": "Flap White", "canonical": "#f2efe7", "cssVar": "--st-white", "tonalRamp": ["oklch(15% 0.006 85)", "oklch(27% 0.008 85)", "oklch(40% 0.01 85)", "oklch(53% 0.011 85)", "oklch(66% 0.012 85)", "oklch(79% 0.012 85)", "oklch(90% 0.012 85)", "oklch(95.5% 0.011 85)"] },
+      "platform-dim": { "role": "neutral", "displayName": "Platform Dim", "canonical": "#a9a59c", "cssVar": "--st-dim", "tonalRamp": ["oklch(15% 0.006 85)", "oklch(27% 0.009 85)", "oklch(40% 0.012 85)", "oklch(53% 0.014 85)", "oklch(64% 0.015 85)", "oklch(72% 0.015 85)", "oklch(84% 0.01 85)", "oklch(95% 0.005 85)"] },
+      "departure-amber": { "role": "secondary", "displayName": "Departure Amber", "canonical": "#ffb000", "cssVar": "--st-amber", "tonalRamp": ["oklch(25% 0.05 75)", "oklch(37% 0.09 75)", "oklch(50% 0.13 75)", "oklch(63% 0.16 75)", "oklch(74% 0.17 75)", "oklch(80% 0.17 75)", "oklch(88% 0.11 80)", "oklch(95% 0.05 85)"] },
+      "signal-red": { "role": "tertiary", "displayName": "Signal Red", "canonical": "#ff5a43", "cssVar": "--st-red", "tonalRamp": ["oklch(22% 0.06 32)", "oklch(34% 0.11 32)", "oklch(46% 0.16 32)", "oklch(58% 0.2 32)", "oklch(66% 0.21 32)", "oklch(76% 0.14 32)", "oklch(86% 0.08 32)", "oklch(95% 0.03 32)"] },
+      "signal-yellow": { "role": "primary", "displayName": "Signal Yellow", "canonical": "#ffc20e", "cssVar": "--st-yellow", "tonalRamp": ["oklch(25% 0.05 85)", "oklch(38% 0.09 85)", "oklch(52% 0.12 85)", "oklch(65% 0.15 85)", "oklch(76% 0.16 85)", "oklch(84% 0.17 85)", "oklch(90% 0.12 90)", "oklch(96% 0.05 95)"] },
+      "signal-yellow-lit": { "role": "primary", "displayName": "Signal Yellow Lit", "canonical": "#ffd23f", "note": "Primary button hover only. Literal in station.css; not a custom property." },
+      "enamel": { "role": "neutral", "displayName": "Enamel", "canonical": "#e7eaea", "cssVar": "--st-enamel", "tonalRamp": ["oklch(15% 0.003 200)", "oklch(27% 0.004 200)", "oklch(40% 0.004 200)", "oklch(53% 0.004 200)", "oklch(66% 0.004 200)", "oklch(79% 0.004 200)", "oklch(93% 0.004 200)", "oklch(97% 0.002 200)"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#0a0b0c", "cssVar": "--st-ink" },
+      "ink-soft": { "role": "neutral", "displayName": "Ink Soft", "canonical": "#3b3e42", "cssVar": "--st-ink-soft", "tonalRamp": ["oklch(15% 0.006 255)", "oklch(25% 0.007 255)", "oklch(36% 0.008 255)", "oklch(48% 0.008 255)", "oklch(60% 0.007 255)", "oklch(72% 0.006 255)", "oklch(84% 0.004 255)", "oklch(95% 0.002 255)"] },
+      "field": { "role": "neutral", "displayName": "Field", "canonical": "#121316", "note": "Literal in station.css (.st-input background)." },
+      "field-border": { "role": "neutral", "displayName": "Field Border", "canonical": "#3a3d42", "note": "Literal in station.css (input stroke, scrollbar thumb)." },
+      "control-border": { "role": "neutral", "displayName": "Control Border", "canonical": "#3f4247", "note": "Literal in station.css (chip and toggle stroke)." },
+      "placeholder": { "role": "neutral", "displayName": "Placeholder", "canonical": "#8f8b83", "note": "Literal in station.css." }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Section headlines on yellow, enamel and timetable fields. Condensed, balanced wrapping." },
+      "headline": { "displayName": "Headline", "purpose": "Headline sharing a row with a pictogram plate." },
+      "title": { "displayName": "Title", "purpose": "Sign titles, route stops, privacy items, timetable services; 24 to 36px." },
+      "body-lead": { "displayName": "Body lead", "purpose": "Paragraph under the board and the closing invitation; 18 to 20px, about 44 to 46ch." },
+      "body": { "displayName": "Body", "purpose": "Supporting copy; 16 to 17px, about 34 to 40ch." },
+      "label": { "displayName": "Label", "purpose": "Uppercase board column heads, header strips, table heads, header status." },
+      "control": { "displayName": "Control", "purpose": "Primary button text." },
+      "flap": { "displayName": "Flap", "purpose": "Split-flap tile characters; size is 1.22 times the tile width." }
+    },
+    "shadows": [
+      { "name": "housing", "value": "inset 0 1px 0 rgba(255,255,255,0.06), 0 40px 80px -40px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.5)", "purpose": "Board frame: top highlight and a deep soft drop." },
+      { "name": "recess", "value": "inset 0 2px 6px rgba(0,0,0,0.7)", "purpose": "Recessed board face." },
+      { "name": "flap", "value": "inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 1px rgba(0,0,0,0.6)", "purpose": "Each split-flap tile." }
+    ],
+    "motion": [
+      { "name": "ease-signal", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "Primary button background and press, 160ms." },
+      { "name": "duration-control", "value": "160ms", "purpose": "Border, background and colour transitions on controls (ease)." },
+      { "name": "flap-step", "value": "42ms", "purpose": "Time between drum steps per tile." },
+      { "name": "flap-flip", "value": "70ms ease-out; perspective(240px) rotateX(78deg) to none, opacity 0.55 to 1", "purpose": "One flap turn." },
+      { "name": "flap-stagger", "value": "22ms", "purpose": "Left-to-right stagger between tiles." },
+      { "name": "no-js-reveal", "value": "1.6s", "purpose": "Delay before server-rendered flap text shows without JS." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "route-horizontal", "value": "900px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "board-narrow (container)", "value": "max-width 640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Signal-yellow signage button for the main action, condensed caps with an SVG arrow.",
+      "html": "<button class=\"ds-btn-primary\">Request an invitation <svg aria-hidden=\"true\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\"><path d=\"M2 8h11M9 3.5 13.5 8 9 12.5\" stroke=\"currentColor\" stroke-width=\"2.2\" fill=\"none\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5em; min-height: 52px; padding: 0 22px; border: none; border-radius: 3px; background: #ffc20e; color: #0a0b0c; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-weight: 750; font-size: 16px; letter-spacing: 0.02em; text-transform: uppercase; font-variation-settings: 'wdth' 76; cursor: pointer; transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), transform 160ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-primary:hover { background: #ffd23f; } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid #ffc20e; outline-offset: 3px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Header link to the waitlist; yellow stroke that fills on hover.",
+      "html": "<a class=\"ds-btn-outline\" href=\"#join\">Join the waitlist</a>",
+      "css": ".ds-btn-outline { display: inline-block; padding: 10px 16px; border: 1px solid #ffc20e; border-radius: 3px; color: #ffc20e; background: #0a0b0c; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 600; font-variation-settings: 'wdth' 84; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-btn-outline:hover { background: #ffc20e; color: #0a0b0c; } .ds-btn-outline:focus-visible { outline: 2px solid #ffc20e; outline-offset: 3px; }"
+    },
+    {
+      "name": "Email Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Dark field with amber caret; border turns yellow on focus, red when invalid.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\" aria-label=\"Email address\">",
+      "css": ".ds-input { min-height: 52px; width: 100%; border: 1px solid #3a3d42; border-radius: 3px; background: #121316; padding: 0 16px; color: #f2efe7; caret-color: #ffb000; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 16px; outline: none; transition: border-color 160ms ease; } .ds-input::placeholder { color: #8f8b83; } .ds-input:focus { border-color: #ffc20e; } .ds-input[aria-invalid='true'] { border-color: #ff5a43; }"
+    },
+    {
+      "name": "Preset Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Board-footer action that adds a sample item; amber on hover.",
+      "html": "<button class=\"ds-chip\"><svg aria-hidden=\"true\" viewBox=\"0 0 12 12\" width=\"12\" height=\"12\"><path d=\"M6 1v10M1 6h10\" stroke=\"currentColor\" stroke-width=\"1.8\" fill=\"none\"/></svg>Phone contract</button>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 1px solid #3f4247; border-radius: 3px; background: #17191c; color: #f2efe7; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-variation-settings: 'wdth' 80; cursor: pointer; transition: border-color 160ms ease, color 160ms ease; } .ds-chip:hover { border-color: #ffb000; color: #ffb000; } .ds-chip:focus-visible { outline: 2px solid #ffc20e; outline-offset: 3px; }"
+    },
+    {
+      "name": "Toggle",
+      "kind": "chip",
+      "refersTo": "toggle",
+      "description": "Multi-select answer in the follow-up question; fills yellow when checked.",
+      "html": "<label class=\"ds-toggle-wrap\"><input type=\"checkbox\" class=\"ds-toggle-input\" checked><span class=\"ds-toggle\">Subscriptions</span></label> <label class=\"ds-toggle-wrap\"><input type=\"checkbox\" class=\"ds-toggle-input\"><span class=\"ds-toggle\">Documents</span></label>",
+      "css": ".ds-toggle-input { position: absolute; opacity: 0; width: 1px; height: 1px; } .ds-toggle { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid #3f4247; border-radius: 3px; background: #17191c; color: #f2efe7; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease; } .ds-toggle-input:checked + .ds-toggle { background: #ffc20e; border-color: #ffc20e; color: #0a0b0c; } .ds-toggle-input:focus-visible + .ds-toggle { outline: 2px solid #ffc20e; outline-offset: 3px; }"
+    },
+    {
+      "name": "Concourse Header",
+      "kind": "nav",
+      "description": "Wordmark with yellow full stop, uppercase status label, outline waitlist button.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-wordmark\" href=\"#\">Kalends<span>.</span></a><div class=\"ds-nav-right\"><p class=\"ds-label\">Early access <span>· Opening soon</span></p><a class=\"ds-nav-btn\" href=\"#join\">Join the waitlist</a></div></header>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 32px; background: #0a0b0c; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-wordmark { font-size: 30px; line-height: 1; font-weight: 800; letter-spacing: -0.01em; font-variation-settings: 'wdth' 68; color: #f2efe7; text-decoration: none; } .ds-wordmark span { color: #ffc20e; } .ds-nav-right { display: flex; align-items: center; gap: 20px; } .ds-label { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #a9a59c; font-variation-settings: 'wdth' 84; } .ds-label span { color: #ffb000; } .ds-nav-btn { padding: 10px 16px; border: 1px solid #ffc20e; border-radius: 3px; color: #ffc20e; font-size: 14px; font-weight: 600; text-decoration: none; font-variation-settings: 'wdth' 84; } .ds-nav-btn:hover { background: #ffc20e; color: #0a0b0c; } .ds-wordmark:focus-visible, .ds-nav-btn:focus-visible { outline: 2px solid #ffc20e; outline-offset: 3px; }"
+    },
+    {
+      "name": "Split-Flap Row",
+      "kind": "custom",
+      "refersTo": "board",
+      "description": "Signature: one board row of split-flap tiles in a housing, amber time and red due remark.",
+      "html": "<div class=\"ds-board\"><div class=\"ds-face\"><div class=\"ds-row\"><span class=\"ds-tile ds-amber\">1</span><span class=\"ds-tile ds-amber\">D</span><span class=\"ds-tile ds-amber\">A</span><span class=\"ds-tile ds-amber\">Y</span><span class=\"ds-tile\"></span><span class=\"ds-tile\">G</span><span class=\"ds-tile\">Y</span><span class=\"ds-tile\">M</span><span class=\"ds-tile\"></span><span class=\"ds-tile ds-red\">D</span><span class=\"ds-tile ds-red\">U</span><span class=\"ds-tile ds-red\">E</span></div></div></div>",
+      "css": ".ds-board { padding: 12px; background: linear-gradient(180deg, #1c1e21, #17191c 40%, #141618); border: 1px solid #2a2d31; border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 40px 80px -40px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.5); } .ds-face { padding: 20px; background: #0f1012; border-radius: 3px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.7); } .ds-row { display: flex; gap: 3px; } .ds-tile { width: 24px; height: 36px; display: grid; place-items: center; border-radius: 2px; background: linear-gradient(180deg, #26282c 0 49.4%, #0a0b0c 49.4% 50.6%, #1f2124 50.6% 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 1px rgba(0,0,0,0.6); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 29px; line-height: 1; font-weight: 700; font-variation-settings: 'wdth' 72; font-variant-numeric: tabular-nums; color: #f2efe7; } .ds-amber { color: #ffb000; } .ds-red { color: #ff5a43; }"
+    },
+    {
+      "name": "Direction Sign",
+      "kind": "custom",
+      "description": "Ink sign bar with a yellow SVG arrow plate and condensed title.",
+      "html": "<div class=\"ds-sign\"><span class=\"ds-plate\"><svg aria-hidden=\"true\" viewBox=\"0 0 48 48\" width=\"100%\" height=\"100%\"><path d=\"M8 24h28M24 10l14 14-14 14\" stroke=\"currentColor\" stroke-width=\"6\" fill=\"none\" stroke-linejoin=\"miter\"/></svg></span><h3 class=\"ds-sign-title\">Contracts &amp; cover</h3></div>",
+      "css": ".ds-sign { display: flex; align-items: center; gap: 16px; padding: 32px 28px; background: #0a0b0c; color: #f2efe7; } .ds-plate { width: 56px; height: 56px; flex: none; padding: 8px; background: #ffc20e; color: #0a0b0c; box-sizing: border-box; } .ds-sign-title { margin: 0; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 36px; line-height: 1; font-weight: 700; font-variation-settings: 'wdth' 68; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Concourse Departures Board",
+    "overview": "Kalends presents life admin as a European station concourse. Bills, documents and contracts arrive on schedule like trains, and a split-flap board tells you in time. The ground is near-black. A charcoal housing holds a grid of split-flap tiles in warm white, with amber for times and notices and signal red only for things that are due or expired. Away from the board, the page moves through full-bleed fields the way a station does: a signal-yellow announcement field with black type, an enamel-white information panel, and back to the black concourse.\n\nDensity is high on the board, where every character sits in its own tile on a strict column grid, and low everywhere else: large condensed headings, short readable paragraphs and wide section padding. One type family, Archivo, carries everything. Its width axis does the work that most systems give to a second typeface. Signage and headings are condensed, reading text is normal width. Arrows, pictograms and the route line are drawn as solid SVG geometry with mitred joins, like printed station signage.\n\nThe flaps are the only motion. They turn forward through the drum on load and when an item is added, and the board re-sorts by date. Nothing else on the page animates in.",
+    "keyCharacteristics": [
+      "One family (Archivo); the width axis separates signage (condensed) from reading (normal).",
+      "Full-bleed colour fields: concourse black, signal yellow, enamel white.",
+      "A split-flap board built from real tiles on a container-query column grid.",
+      "Square signage controls (3px), solid SVG arrows and pictograms on yellow or ink plates.",
+      "Tone carries meaning: amber for time, red for due or expired, dim for passive status."
+    ],
+    "rules": [
+      { "name": "The One Job Rule", "body": "Each signal colour means one thing. Amber is time and notices, red is due or expired, and yellow is action and signage. A red that only decorates, or an amber that is not about time, breaks the board's language.", "section": "colors" },
+      { "name": "The Ink-on-Yellow Rule", "body": "Yellow fields and plates always carry ink type, never white. On yellow and enamel grounds, focus outlines change from yellow to ink.", "section": "colors" },
+      { "name": "The Width Axis Rule", "body": "Hierarchy comes from width before size. Use 'wdth' 68 for headings and signs, 72 for flaps, 76 to 84 for controls and labels, and 100 for anything people read as prose. Do not add a second family.", "section": "typography" },
+      { "name": "The Board Caps Rule", "body": "Board text is uppercase and limited to the drum's characters (A to Z, 0 to 9, and € . , : - / ' ! &). Anything else shows as a blank flap.", "section": "typography" },
+      { "name": "The Hardware-Only Depth Rule", "body": "Shadows exist only on the board's housing, face and tiles. Signage, fields and controls stay flat.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set headings and signs in Archivo at 'wdth' 68, weight 700, line-height 0.98, and reading text at 'wdth' 100 with 1.625 line-height.",
+      "Do use amber only for time and notices, and red only for due, expired or error states.",
+      "Do put ink type on yellow and enamel fields, and switch focus outlines to ink there.",
+      "Do build board content from real tiles on a --cols container-query grid, in uppercase drum characters.",
+      "Do draw arrows, pictograms and plus signs as solid SVG on square yellow or ink plates.",
+      "Do keep controls at 3px radius and 52px tall for primary actions.",
+      "Do honour prefers-reduced-motion by showing final flap states and turning off control transitions."
+    ],
+    "donts": [
+      "Don't animate anything except the flaps; no other element enters, fades or slides in.",
+      "Don't add shadows to signage, fields or controls; depth belongs to the board hardware.",
+      "Don't introduce a second typeface; vary width and weight within Archivo instead.",
+      "Don't use pure white (#fff) for text on black; use Flap White.",
+      "Don't carry the signed-in app's cream paper, Fraunces/Geist pairing or globals.css tokens into this world."
+    ]
+  }
+}

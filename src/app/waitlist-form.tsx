@@ -12,7 +12,7 @@ import {
 const initialState: WaitlistState = { status: 'idle', message: '' };
 const initialAnswer: AnswerState = { status: 'idle', message: '' };
 
-function FollowUp({ email, inverse }: { email: string; inverse: boolean }) {
+function FollowUp({ email }: { email: string }) {
   const [state, formAction, pending] = useActionState(
     saveAnswer,
     initialAnswer,
@@ -21,10 +21,7 @@ function FollowUp({ email, inverse }: { email: string; inverse: boolean }) {
 
   if (state.status === 'success') {
     return (
-      <p
-        role="status"
-        className={`mt-4 text-[14px] ${inverse ? 'text-accent-ink/70' : 'text-ink-soft'}`}
-      >
+      <p role="status" className="mt-4 text-[15px] text-(--st-dim)">
         {state.message}
       </p>
     );
@@ -33,35 +30,23 @@ function FollowUp({ email, inverse }: { email: string; inverse: boolean }) {
   return (
     <form
       action={formAction}
-      className={`mt-6 rounded-2xl border p-5 text-left ${
-        inverse ? 'border-accent-ink/25' : 'border-line bg-paper-raised'
-      }`}
+      className="mt-6 rounded-[3px] border border-(--st-rule) bg-(--st-housing) p-5 text-left"
     >
       <input type="hidden" name="email" value={email} />
       <fieldset>
-        <legend
-          className={`text-[14px] ${inverse ? 'text-accent-ink' : 'text-ink'}`}
-        >
+        <legend className="text-[15px] text-(--st-white)">
           One optional question: what would you want us to watch first?
         </legend>
         <div className="mt-4 flex flex-wrap gap-2">
           {TRACK_OPTIONS.map((option) => (
-            <label key={option} className="cursor-pointer">
+            <label key={option}>
               <input
                 type="checkbox"
                 name="track"
                 value={option}
                 className="peer sr-only"
               />
-              <span
-                className={`inline-block rounded-full border px-3.5 py-1.5 text-[13px] transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 ${
-                  inverse
-                    ? 'border-accent-ink/30 text-accent-ink peer-checked:bg-accent-ink peer-checked:text-accent peer-focus-visible:outline-accent-ink'
-                    : 'border-line text-ink-soft peer-checked:border-accent peer-checked:bg-accent peer-checked:text-accent-ink peer-focus-visible:outline-accent'
-                }`}
-              >
-                {option}
-              </span>
+              <span className="st-toggle">{option}</span>
             </label>
           ))}
         </div>
@@ -74,25 +59,16 @@ function FollowUp({ email, inverse }: { email: string; inverse: boolean }) {
         name="other"
         maxLength={200}
         placeholder="Something else? Tell us…"
-        className={`mt-4 w-full border-b bg-transparent py-2 text-[14px] outline-none ${
-          inverse
-            ? 'border-accent-ink/30 text-accent-ink placeholder:text-accent-ink/50 focus:border-accent-ink'
-            : 'border-line text-ink placeholder:text-ink-faint focus:border-accent'
-        }`}
+        className="st-input mt-4"
       />
       <div className="mt-4 flex items-center justify-between gap-4">
-        <p
-          aria-live="polite"
-          className={`text-[13px] ${inverse ? 'text-accent-ink' : 'text-alert'}`}
-        >
+        <p aria-live="polite" className="text-[14px] text-(--st-red)">
           {state.status === 'error' ? state.message : ''}
         </p>
         <button
           type="submit"
           disabled={pending}
-          className={`shrink-0 rounded-full px-4 py-2 text-[13px] font-medium transition-opacity hover:opacity-90 disabled:opacity-60 ${
-            inverse ? 'bg-accent-ink text-accent' : 'bg-accent text-accent-ink'
-          }`}
+          className="st-btn min-h-11 shrink-0 px-5 text-[14px]"
         >
           {pending ? 'Sending…' : 'Send'}
         </button>
@@ -101,41 +77,30 @@ function FollowUp({ email, inverse }: { email: string; inverse: boolean }) {
   );
 }
 
-export function WaitlistForm({
-  tone = 'light',
-}: {
-  tone?: 'light' | 'inverse';
-}) {
+export function WaitlistForm() {
   const [state, formAction, pending] = useActionState(
     joinWaitlist,
     initialState,
   );
   const id = useId();
-  const inverse = tone === 'inverse';
 
   if (state.status === 'success') {
     return (
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-xl">
         <p
           role="status"
-          className={`font-serif text-xl italic ${inverse ? 'text-accent-ink' : 'text-accent'}`}
+          className="st-cond text-[26px] leading-tight font-bold text-(--st-yellow)"
         >
           {state.message}
         </p>
-        {state.email && <FollowUp email={state.email} inverse={inverse} />}
+        {state.email && <FollowUp email={state.email} />}
       </div>
     );
   }
 
   return (
-    <form action={formAction} className="w-full max-w-md">
-      <div
-        className={`flex flex-col gap-2 rounded-full border p-1.5 sm:flex-row sm:items-center ${
-          inverse
-            ? 'border-accent-ink/25 bg-accent-ink/5'
-            : 'border-line bg-paper-raised shadow-[0_1px_0_rgba(0,0,0,0.02)]'
-        } max-sm:rounded-2xl`}
-      >
+    <form action={formAction} className="w-full max-w-xl">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <label htmlFor={`${id}-email`} className="sr-only">
           Email address
         </label>
@@ -148,11 +113,7 @@ export function WaitlistForm({
           placeholder="you@example.com"
           aria-invalid={state.status === 'error'}
           aria-describedby={`${id}-msg`}
-          className={`min-w-0 flex-1 bg-transparent px-4 py-2.5 text-[15px] outline-none ${
-            inverse
-              ? 'text-accent-ink placeholder:text-accent-ink/50'
-              : 'text-ink placeholder:text-ink-faint'
-          }`}
+          className="st-input flex-1"
         />
         <input
           name="company"
@@ -161,29 +122,25 @@ export function WaitlistForm({
           aria-hidden="true"
           className="hidden"
         />
-        <button
-          type="submit"
-          disabled={pending}
-          className={`rounded-full px-5 py-2.5 text-[14px] font-medium tracking-wide transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 ${
-            inverse
-              ? 'bg-accent-ink text-accent focus-visible:outline-accent-ink'
-              : 'bg-accent text-accent-ink focus-visible:outline-accent'
-          }`}
-        >
+        <button type="submit" disabled={pending} className="st-btn shrink-0">
           {pending ? 'Joining…' : 'Request an invitation'}
+          {!pending && (
+            <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4">
+              <path
+                d="M2 8h11M9 3.5 13.5 8 9 12.5"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                fill="none"
+              />
+            </svg>
+          )}
         </button>
       </div>
       <p
         id={`${id}-msg`}
         aria-live="polite"
-        className={`mt-3 min-h-5 px-4 text-[13px] ${
-          state.status === 'error'
-            ? inverse
-              ? 'text-accent-ink'
-              : 'text-alert'
-            : inverse
-              ? 'text-accent-ink/60'
-              : 'text-ink-faint'
+        className={`mt-3 min-h-5 text-[14px] ${
+          state.status === 'error' ? 'text-(--st-red)' : 'text-(--st-dim)'
         }`}
       >
         {state.status === 'error'

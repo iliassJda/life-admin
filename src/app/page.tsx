@@ -1,51 +1,32 @@
+import { Archivo } from 'next/font/google';
 import { site } from '@/lib/core/site';
+import { DepartureBoard, MessageBoard } from './landing/departure-board';
 import { WaitlistForm } from './waitlist-form';
+import './station.css';
 
-const upcoming = [
-  {
-    name: 'Netflix',
-    kind: 'Subscription',
-    when: 'Renews in 3 days',
-    amount: '€15.99',
-    urgent: true,
-  },
-  {
-    name: 'Car insurance',
-    kind: 'Policy',
-    when: 'Renews 12 Nov',
-    amount: '€487.00',
-  },
-  {
-    name: 'Passport',
-    kind: 'Document',
-    when: 'Expires in 41 days',
-    amount: null,
-  },
-  {
-    name: 'Adobe Creative Cloud',
-    kind: 'Subscription',
-    when: 'Annual · 28 Nov',
-    amount: '€287.88',
-  },
-];
+const archivo = Archivo({
+  variable: '--font-archivo',
+  subsets: ['latin'],
+  axes: ['wdth'],
+});
 
 const watches = [
   {
-    numeral: 'I',
     title: 'Subscriptions',
+    arrow: 'left',
     body: 'Streaming, software, gyms, the free trial you forgot about. See what you pay each month and year, and get a nudge to cancel what you no longer use.',
   },
   {
-    numeral: 'II',
     title: 'Documents',
+    arrow: 'up',
     body: 'Passport, ID card, driving licence, residence permit. Know months ahead when something needs renewing — not at the airport.',
   },
   {
-    numeral: 'III',
     title: 'Contracts & cover',
+    arrow: 'right',
     body: 'Insurance policies, phone and energy contracts, your lease, product warranties. Decide before they quietly roll over at a higher price.',
   },
-];
+] as const;
 
 const steps = [
   {
@@ -59,6 +40,25 @@ const steps = [
   {
     title: 'You’re told in time',
     body: 'A calm email 30, 7 and 1 day before anything happens, with a direct link to the item so you can decide.',
+  },
+];
+
+const privacy = [
+  {
+    title: 'Private by design',
+    body: 'Files live in private storage, reachable only through short-lived links.',
+  },
+  {
+    title: 'Only what’s needed',
+    body: 'A name, a date, an amount. Uploading the document itself is always optional.',
+  },
+  {
+    title: 'Never sold',
+    body: 'No advertising, no data brokers. You are not the product.',
+  },
+  {
+    title: 'Leave any time',
+    body: 'Delete your account — and all of its data — in one step.',
   },
 ];
 
@@ -111,279 +111,333 @@ const horizon = [
   },
 ];
 
+function Wordmark({ className = '' }: { className?: string }) {
+  return (
+    <span className={`st-cond font-extrabold tracking-[-0.01em] ${className}`}>
+      {site.name}
+      <span className="text-(--st-yellow)">.</span>
+    </span>
+  );
+}
+
+function Arrow({ dir }: { dir: 'left' | 'up' | 'right' }) {
+  const rotate = { left: 180, up: -90, right: 0 }[dir];
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 48 48"
+      className="size-full"
+      style={{ transform: `rotate(${rotate}deg)` }}
+    >
+      <path
+        d="M8 24h28M24 10l14 14-14 14"
+        stroke="currentColor"
+        strokeWidth="6"
+        fill="none"
+        strokeLinejoin="miter"
+      />
+    </svg>
+  );
+}
+
+function Pictogram({ kind }: { kind: 'bell' | 'info' }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 48 48" className="size-full">
+      {kind === 'bell' ? (
+        <g fill="currentColor">
+          <path d="M24 7c-7.2 0-12 5.4-12 12.6v8.2L8 33.5V36h32v-2.5l-4-5.7v-8.2C36 12.4 31.2 7 24 7Z" />
+          <path d="M19 38.5h10a5 5 0 0 1-10 0Z" />
+        </g>
+      ) : (
+        <g fill="currentColor">
+          <circle cx="24" cy="12" r="4.5" />
+          <path d="M18 20h9v16h4v5H17v-5h4V25h-3z" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
+const heading =
+  'st-cond font-bold tracking-[-0.01em] leading-[0.98] text-balance';
+
 export default function Home() {
   return (
-    <div className="relative overflow-x-clip">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 sm:px-10">
-        <a href="#" className="font-serif text-2xl tracking-tight">
-          {site.name}
-          <span className="text-gold">.</span>
-        </a>
+    <div className={`${archivo.variable} station relative overflow-x-clip`}>
+      {/* Concourse header */}
+      <header className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-6 px-4 py-5 sm:px-8">
         <a
-          href="#join"
-          className="border-line text-ink-soft hover:border-ink-faint hover:text-ink rounded-full border px-4 py-2 text-[13px] font-medium tracking-wide transition-colors"
+          href="#"
+          className="text-[30px] leading-none"
+          aria-label={`${site.name} home`}
         >
-          Join the waitlist
+          <Wordmark />
         </a>
+        <div className="flex items-center gap-5">
+          <p className="st-label hidden sm:block">
+            Early access{' '}
+            <span className="text-(--st-amber)">· Opening soon</span>
+          </p>
+          <a
+            href="#join"
+            className="st-semi rounded-[3px] border border-(--st-yellow) px-4 py-2.5 text-[14px] font-semibold text-(--st-yellow) transition-colors hover:bg-(--st-yellow) hover:text-(--st-ink)"
+          >
+            Join the waitlist
+          </a>
+        </div>
       </header>
 
       <main>
-        {/* Hero */}
-        <section className="mx-auto grid w-full max-w-6xl items-center gap-16 px-6 pt-12 pb-24 sm:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:pt-20 lg:pb-32">
-          <div className="rise">
-            <p className="text-ink-faint mb-6 flex items-center gap-3 text-[12px] font-medium tracking-[0.2em] uppercase">
-              <span className="bg-gold h-px w-8" />
-              Early access · Opening soon
-            </p>
-            <h1 className="font-serif text-[clamp(2.75rem,6.5vw,5.25rem)] leading-[1.02] font-light tracking-[-0.02em]">
-              Never be surprised by a charge, a fine or an{' '}
-              <em className="text-accent font-normal italic">expired</em>{' '}
-              document again.
-            </h1>
-            <p className="text-ink-soft mt-8 max-w-xl text-[17px] leading-relaxed">
+        {/* Hero: the board is the page */}
+        <section className="mx-auto w-full max-w-[1320px] px-4 pt-2 pb-20 sm:px-8 lg:pb-28">
+          <h1 className="sr-only">
+            Never be surprised by a charge, a fine or an expired document again.
+          </h1>
+          <p className="sr-only">
+            Sample board: Netflix renews in 3 days, car insurance in 11 days,
+            Adobe Creative Cloud in 27 days and your passport expires in 41
+            days. Reminders have already gone out for the first three.
+          </p>
+          <DepartureBoard />
+          <p className="mt-3 px-1 text-[13px] text-(--st-dim)">
+            Sample board. Your own items appear here once you’re in.
+          </p>
+
+          <div className="mt-8 grid gap-8 lg:mt-12 lg:grid-cols-[1fr_auto] lg:items-start lg:gap-16">
+            <p className="order-2 max-w-[46ch] text-[18px] leading-relaxed text-(--st-white) sm:text-[20px] lg:order-none">
               {site.description}
             </p>
-            <div className="mt-10">
+            <div className="order-1 lg:order-none lg:w-[560px]">
               <WaitlistForm />
             </div>
           </div>
+        </section>
 
-          <div className="rise [animation-delay:150ms]" aria-hidden="true">
-            <div className="relative mx-auto max-w-md">
-              <div className="from-gold/15 to-accent/10 absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-br via-transparent blur-2xl" />
-              <div className="border-line bg-paper-raised rounded-[1.75rem] border p-7 shadow-[0_30px_60px_-30px_rgba(40,30,10,0.25)]">
-                <div className="border-line flex items-baseline justify-between border-b pb-5">
-                  <div>
-                    <p className="text-ink-faint text-[11px] font-medium tracking-[0.18em] uppercase">
-                      Upcoming
-                    </p>
-                    <p className="mt-1 font-serif text-2xl">The next 60 days</p>
+        {/* Announcement: signal-yellow field */}
+        <section className="st-on-yellow bg-(--st-yellow) text-(--st-ink)">
+          <div className="mx-auto grid w-full max-w-[1320px] gap-8 px-4 py-20 sm:px-8 sm:py-28 md:grid-cols-[auto_1fr] md:gap-12">
+            <div className="size-16 bg-(--st-ink) p-3 text-(--st-yellow) sm:size-24 sm:p-4">
+              <Pictogram kind="bell" />
+            </div>
+            <div>
+              <p
+                className={`${heading} max-w-[24ch] text-[clamp(2.25rem,5.4vw,4.75rem)]`}
+              >
+                Most of us pay for something we forgot we signed up for — and
+                find out a passport has expired{' '}
+                <span className="underline decoration-[0.09em] underline-offset-[0.12em]">
+                  the week of the trip
+                </span>
+                .
+              </p>
+              <p className="st-semi mt-8 text-[18px] font-semibold">
+                {site.name} exists so that never happens to you.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* What it watches: a hanging direction sign on enamel */}
+        <section className="st-on-light bg-(--st-enamel) text-(--st-ink)">
+          <div className="mx-auto w-full max-w-[1320px] px-4 py-24 sm:px-8 sm:py-32">
+            <h2
+              className={`${heading} max-w-[16ch] text-[clamp(2.5rem,5.6vw,5rem)]`}
+            >
+              Everything with a date attached to it.
+            </h2>
+
+            <ul className="mt-14 grid gap-10 md:grid-cols-3 md:gap-0">
+              {watches.map((w, i) => (
+                <li key={w.title} className="flex flex-col">
+                  <div
+                    className={`flex items-center gap-4 bg-(--st-ink) px-5 py-6 text-(--st-white) sm:px-7 sm:py-8 ${
+                      i > 0 ? 'md:border-l md:border-(--st-rule)' : ''
+                    } ${w.arrow === 'right' ? 'md:flex-row-reverse md:justify-start' : ''}`}
+                  >
+                    <span className="size-12 flex-none bg-(--st-yellow) p-2 text-(--st-ink) sm:size-14">
+                      <Arrow dir={w.arrow} />
+                    </span>
+                    <h3 className="st-cond text-[30px] leading-none font-bold sm:text-[36px]">
+                      {w.title}
+                    </h3>
                   </div>
-                  <p className="text-right">
-                    <span className="block font-serif text-2xl">€789.87</span>
-                    <span className="text-ink-faint text-[11px]">due</span>
+                  <p
+                    className={`max-w-[38ch] pt-5 text-[16px] leading-relaxed text-(--st-ink-soft) md:px-7 md:pt-8 ${
+                      i === 0
+                        ? 'md:pl-0'
+                        : 'md:border-l md:border-(--st-ink)/15'
+                    }`}
+                  >
+                    {w.body}
                   </p>
-                </div>
-                <ul className="divide-line divide-y">
-                  {upcoming.map((item) => (
+                </li>
+              ))}
+            </ul>
+
+            {/* How it works: a route line */}
+            <div className="mt-28 grid gap-14 sm:mt-36 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
+              <div>
+                <h2 className={`${heading} text-[clamp(2.5rem,5.6vw,5rem)]`}>
+                  Add it once.
+                  <br />
+                  Let it go.
+                </h2>
+                <p className="mt-6 max-w-[38ch] text-[17px] leading-relaxed text-(--st-ink-soft)">
+                  The best life admin is the kind you don’t have to think about.
+                  Add something once, and it’s taken care of from then on.
+                </p>
+              </div>
+              <div className="lg:pt-4">
+                <ol className="st-route" aria-label="Calling at">
+                  {steps.map((s, i) => (
                     <li
-                      key={item.name}
-                      className="flex items-center gap-4 py-4"
+                      key={s.title}
+                      className="st-stop"
+                      data-terminus={i === steps.length - 1 ? '' : undefined}
                     >
-                      <span
-                        className={`size-2 shrink-0 rounded-full ${item.urgent ? 'bg-alert' : 'bg-line'}`}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[15px] font-medium">
-                          {item.name}
-                        </p>
-                        <p className="text-ink-faint text-[12px]">
-                          {item.kind} ·{' '}
-                          <span className={item.urgent ? 'text-alert' : ''}>
-                            {item.when}
-                          </span>
+                      <span className="st-stop-dot" aria-hidden="true" />
+                      <div>
+                        <h3 className="st-cond text-[28px] leading-none font-bold">
+                          {s.title}
+                        </h3>
+                        <p className="mt-3 max-w-[34ch] text-[16px] leading-relaxed text-(--st-ink-soft)">
+                          {s.body}
                         </p>
                       </div>
-                      <span className="text-ink-soft font-serif text-[15px] tabular-nums">
-                        {item.amount ?? '—'}
-                      </span>
                     </li>
                   ))}
-                </ul>
-                <div className="bg-paper text-ink-soft mt-2 rounded-xl px-4 py-3 text-[12.5px] leading-snug">
-                  <span className="text-ink font-medium">Reminder sent.</span>{' '}
-                  Netflix renews in 3 days. Still watching? Now’s the time to
-                  decide.
-                </div>
+                </ol>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Quote band */}
-        <section className="border-line bg-paper-raised border-y">
-          <div className="mx-auto max-w-4xl px-6 py-20 text-center sm:px-10 sm:py-24">
-            <p className="font-serif text-[clamp(1.6rem,3.4vw,2.5rem)] leading-snug font-light">
-              Most of us pay for something we forgot we signed up for — and find
-              out a passport has expired{' '}
-              <em className="text-accent">the week of the trip</em>.
-            </p>
-            <p className="text-ink-faint mt-6 text-[13px] tracking-[0.18em] uppercase">
-              {site.name} exists so that never happens to you
-            </p>
-          </div>
-        </section>
-
-        {/* What it watches */}
-        <section className="mx-auto w-full max-w-6xl px-6 py-24 sm:px-10 sm:py-32">
-          <div className="max-w-2xl">
-            <p className="text-gold text-[12px] font-medium tracking-[0.2em] uppercase">
-              What it watches
-            </p>
-            <h2 className="mt-4 font-serif text-[clamp(2rem,4vw,3.25rem)] leading-tight font-light tracking-[-0.01em]">
-              Everything with a date attached to it.
-            </h2>
-          </div>
-          <div className="border-line bg-line mt-16 grid gap-px overflow-hidden rounded-3xl border md:grid-cols-3">
-            {watches.map((w) => (
-              <article key={w.title} className="bg-paper p-8 sm:p-10">
-                <p className="text-gold font-serif text-sm italic">
-                  {w.numeral}
-                </p>
-                <h3 className="mt-6 font-serif text-2xl">{w.title}</h3>
-                <p className="text-ink-soft mt-4 text-[15px] leading-relaxed">
-                  {w.body}
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* How it works */}
-        <section className="mx-auto w-full max-w-6xl px-6 pb-24 sm:px-10 sm:pb-32">
-          <div className="grid gap-16 lg:grid-cols-[0.8fr_1.2fr]">
-            <div>
-              <p className="text-gold text-[12px] font-medium tracking-[0.2em] uppercase">
-                How it works
-              </p>
-              <h2 className="mt-4 font-serif text-[clamp(2rem,4vw,3.25rem)] leading-tight font-light tracking-[-0.01em]">
-                Add it once. <br />
-                <em className="text-accent">Let it go.</em>
-              </h2>
-              <p className="text-ink-soft mt-6 max-w-sm text-[15px] leading-relaxed">
-                The best life admin is the kind you don’t have to think about.
-                Add something once, and it’s taken care of from then on.
-              </p>
-            </div>
-            <ol className="space-y-0">
-              {steps.map((s, i) => (
-                <li
-                  key={s.title}
-                  className="border-line grid grid-cols-[3.5rem_1fr] gap-4 border-t py-8 last:border-b"
-                >
-                  <span className="text-ink-faint font-serif text-3xl font-light tabular-nums">
-                    0{i + 1}
-                  </span>
-                  <div>
-                    <h3 className="font-serif text-xl">{s.title}</h3>
-                    <p className="text-ink-soft mt-2 text-[15px] leading-relaxed">
-                      {s.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* Privacy */}
-        <section className="mx-auto w-full max-w-6xl px-6 pb-24 sm:px-10 sm:pb-32">
-          <div className="border-line bg-paper-raised grid gap-10 rounded-3xl border p-8 sm:p-12 md:grid-cols-3">
-            <div className="md:col-span-1">
-              <p className="text-gold text-[12px] font-medium tracking-[0.2em] uppercase">
-                Discretion
-              </p>
-              <h2 className="mt-4 font-serif text-3xl leading-tight font-light">
+        {/* Privacy: information panel on the concourse */}
+        <section className="mx-auto w-full max-w-[1320px] px-4 py-24 sm:px-8 sm:py-32">
+          <div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
+            <div className="flex items-start gap-5">
+              <span className="size-14 flex-none bg-(--st-yellow) p-2.5 text-(--st-ink) sm:size-16">
+                <Pictogram kind="info" />
+              </span>
+              <h2 className={`${heading} text-[clamp(2.25rem,4.6vw,4rem)]`}>
                 Your documents are yours.
               </h2>
             </div>
-            <ul className="text-ink-soft grid gap-8 text-[15px] leading-relaxed sm:grid-cols-2 md:col-span-2">
-              <li>
-                <p className="text-ink font-medium">Private by design</p>
-                Files live in private storage, reachable only through
-                short-lived links.
-              </li>
-              <li>
-                <p className="text-ink font-medium">Only what’s needed</p>A
-                name, a date, an amount. Uploading the document itself is always
-                optional.
-              </li>
-              <li>
-                <p className="text-ink font-medium">Never sold</p>
-                No advertising, no data brokers. You pay for the product; you
-                are not the product.
-              </li>
-              <li>
-                <p className="text-ink font-medium">Leave any time</p>
-                Delete your account — and all of its data — in one step.
-              </li>
+            <ul className="grid border-t border-(--st-rule) sm:grid-cols-2">
+              {privacy.map((p, i) => (
+                <li
+                  key={p.title}
+                  className={`border-b border-(--st-rule) py-7 sm:px-7 ${
+                    i % 2 === 0 ? 'sm:border-r sm:pl-0' : 'sm:pr-0'
+                  }`}
+                >
+                  <h3 className="st-cond text-[24px] leading-none font-bold">
+                    {p.title}
+                  </h3>
+                  <p className="mt-3 text-[16px] leading-relaxed text-(--st-dim)">
+                    {p.body}
+                  </p>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
 
-        {/* On the horizon */}
-        <section className="mx-auto w-full max-w-6xl px-6 pb-24 sm:px-10 sm:pb-32">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div className="max-w-2xl">
-              <p className="text-gold text-[12px] font-medium tracking-[0.2em] uppercase">
-                On the horizon
-              </p>
-              <h2 className="mt-4 font-serif text-[clamp(2rem,4vw,3.25rem)] leading-tight font-light tracking-[-0.01em]">
+        {/* On the horizon: the printed yellow timetable */}
+        <section className="st-on-yellow bg-(--st-yellow) text-(--st-ink)">
+          <div className="mx-auto w-full max-w-[1320px] px-4 py-24 sm:px-8 sm:py-32">
+            <div className="flex flex-col justify-between gap-6 border-b-[6px] border-(--st-ink) pb-8 md:flex-row md:items-end">
+              <h2 className={`${heading} text-[clamp(2.5rem,5.6vw,5rem)]`}>
                 Where we’re heading.
               </h2>
+              <p className="max-w-[40ch] text-[16px] leading-relaxed">
+                None of this exists yet — and early members help decide what
+                comes first.{' '}
+                <a
+                  href="#join"
+                  className="font-semibold underline decoration-2 underline-offset-4 hover:decoration-[3px]"
+                >
+                  Tell us what matters to you
+                </a>
+                .
+              </p>
             </div>
-            <p className="text-ink-soft max-w-sm text-[15px] leading-relaxed">
-              None of this exists yet — and early members help decide what comes
-              first.{' '}
-              <a
-                href="#join"
-                className="text-accent decoration-accent/40 hover:decoration-accent underline underline-offset-4"
-              >
-                Tell us what matters to you
-              </a>
-              .
-            </p>
-          </div>
-          <div className="mt-16 grid gap-12 md:grid-cols-2 md:gap-16">
-            {horizon.map((group) => (
-              <div key={group.stage}>
-                <p className="border-line flex items-baseline gap-3 border-b pb-4">
-                  <span className="font-serif text-2xl italic">
-                    {group.stage}
-                  </span>
-                </p>
-                <ul>
-                  {group.items.map((item) => (
-                    <li key={item.title} className="border-line border-b py-5">
-                      <p className="text-[15px] font-medium">{item.title}</p>
-                      <p className="text-ink-soft mt-1 text-[14px] leading-relaxed">
+
+            <table className="w-full border-collapse text-left">
+              <caption className="sr-only">
+                Planned features. None of them exist yet.
+              </caption>
+              <thead className="max-md:sr-only">
+                <tr className="st-label border-b border-(--st-ink) text-(--st-ink)!">
+                  <th scope="col" className="w-[7rem] py-3 font-semibold">
+                    Stage
+                  </th>
+                  <th scope="col" className="w-[30%] py-3 font-semibold">
+                    Service
+                  </th>
+                  <th scope="col" className="py-3 font-semibold">
+                    What it does
+                  </th>
+                </tr>
+              </thead>
+              {horizon.map((group) => (
+                <tbody key={group.stage}>
+                  {group.items.map((item, i) => (
+                    <tr
+                      key={item.title}
+                      className="grid grid-cols-[5rem_1fr] border-b border-(--st-ink)/25 py-5 md:table-row md:py-0"
+                    >
+                      <td className="st-cond row-span-2 text-[22px] font-bold md:py-5 md:align-top">
+                        {i === 0 ? (
+                          group.stage
+                        ) : (
+                          <span className="sr-only">{group.stage}</span>
+                        )}
+                      </td>
+                      <th
+                        scope="row"
+                        className="st-cond text-[24px] leading-tight font-bold md:py-5 md:pr-8 md:align-top"
+                      >
+                        {item.title}
+                      </th>
+                      <td className="mt-1 text-[16px] leading-relaxed md:py-5 md:align-top">
                         {item.body}
-                      </p>
-                    </li>
+                      </td>
+                    </tr>
                   ))}
-                </ul>
-              </div>
-            ))}
+                </tbody>
+              ))}
+            </table>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section id="join" className="bg-accent text-accent-ink scroll-mt-8">
-          <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center sm:px-10 sm:py-32">
-            <p className="text-[12px] font-medium tracking-[0.2em] uppercase opacity-70">
-              Early access
-            </p>
-            <h2 className="mt-5 font-serif text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.05] font-light tracking-[-0.01em]">
-              Hand over the remembering.
-            </h2>
-            <p className="mt-6 max-w-lg text-[16px] leading-relaxed opacity-75">
-              We’re inviting a small first group to shape {site.name}. Leave
-              your email and you’ll be among the first in.
-            </p>
-            <div className="mt-10 flex w-full justify-center">
-              <WaitlistForm tone="inverse" />
+        {/* Closing: back to the board */}
+        <section id="join" className="scroll-mt-4">
+          <div className="mx-auto w-full max-w-[1100px] px-4 py-24 sm:px-8 sm:py-32">
+            <h2 className="sr-only">Hand over the remembering.</h2>
+            <MessageBoard
+              wide={['HAND OVER THE REMEMBERING.']}
+              narrow={['HAND OVER THE', 'REMEMBERING.']}
+            />
+            <div className="mt-10 grid gap-8 md:grid-cols-[1fr_auto] md:items-start md:gap-14">
+              <p className="max-w-[44ch] text-[18px] leading-relaxed">
+                We’re inviting a small first group to shape {site.name}. Leave
+                your email and you’ll be among the first in.
+              </p>
+              <div className="md:w-[520px]">
+                <WaitlistForm />
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="text-ink-faint mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 text-[13px] sm:flex-row sm:px-10">
-        <p className="text-ink font-serif text-lg">
-          {site.name}
-          <span className="text-gold">.</span>
-        </p>
-        <p>{site.tagline}</p>
-        <p>© {new Date().getFullYear()}</p>
+      <footer className="border-t border-(--st-rule)">
+        <div className="mx-auto flex w-full max-w-[1320px] flex-col items-start justify-between gap-3 px-4 py-8 text-[14px] text-(--st-dim) sm:flex-row sm:items-center sm:px-8">
+          <Wordmark className="text-[22px] text-(--st-white)" />
+          <p>{site.tagline}</p>
+          <p className="st-num">© {new Date().getFullYear()}</p>
+        </div>
       </footer>
     </div>
   );
